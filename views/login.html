@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login – APEX Movement Sports Academy</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      .auth-page {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      .auth-visual {
+        position: relative;
+        background: url("https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200")
+          center/cover;
+        overflow: hidden;
+      }
+      .auth-visual::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(7, 9, 13, 0.7),
+          rgba(198, 241, 53, 0.1)
+        );
+      }
+      .auth-visual-content {
+        position: relative;
+        z-index: 1;
+        padding: 60px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .auth-visual-quote {
+        font-family: "Bebas Neue";
+        font-size: clamp(42px, 5vw, 72px);
+        letter-spacing: 2px;
+        line-height: 1;
+      }
+      .auth-visual-quote span {
+        color: var(--lime);
+      }
+      .auth-panel {
+        background: var(--dark);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 48px;
+      }
+      .auth-form-wrap {
+        width: 100%;
+        max-width: 400px;
+      }
+      .auth-title {
+        font-family: "Bebas Neue";
+        font-size: 42px;
+        letter-spacing: 3px;
+        margin-bottom: 8px;
+      }
+      .auth-sub {
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 36px;
+      }
+      .auth-divider {
+        text-align: center;
+        color: var(--muted);
+        font-size: 13px;
+        margin: 20px 0;
+        position: relative;
+      }
+      .auth-divider::before,
+      .auth-divider::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: 40%;
+        height: 1px;
+        background: var(--border);
+      }
+      .auth-divider::before {
+        left: 0;
+      }
+      .auth-divider::after {
+        right: 0;
+      }
+      .auth-switch {
+        text-align: center;
+        margin-top: 24px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .auth-switch a {
+        color: var(--lime);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      @media (max-width: 900px) {
+        .auth-page {
+          grid-template-columns: 1fr;
+        }
+        .auth-visual {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/" class="nav-logo">
+        <div class="nav-logo-icon">A</div>
+        <span class="nav-logo-text">APEX<span>Academy</span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/programs">Programs</a></li>
+        <li><a href="/coaches">Coaches</a></li>
+        <li><a href="/schedule">Schedule</a></li>
+        <li><a href="/events">Events</a></li>
+        <li><a href="/forum">Forum</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="/register" class="btn-primary btn-sm">Join Now</a>
+      </div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </nav>
+    <div class="mobile-menu">
+      <a href="/">Home</a><a href="/about">About</a
+      ><a href="/programs">Programs</a> <a href="/coaches">Coaches</a
+      ><a href="/schedule">Schedule</a> <a href="/events">Events</a
+      ><a href="/forum">Forum</a><a href="/contact">Contact</a><a href="/register">Register</a>
+    </div>
+
+    <div class="auth-page">
+      <div class="auth-visual">
+        <div class="auth-visual-content">
+          <br />
+          <!-- <a href="/" class="nav-logo">
+            <div class="nav-logo-icon">A</div>
+            <span class="nav-logo-text" style="font-size: 18px"
+              >APEX<span>ACADEMY</span></span
+            >
+          </a> -->
+          <div>
+            <div class="auth-visual-quote">
+              TRAIN<br />HARD<br /><span>MOVE</span><br />FREE
+            </div>
+            <p style="color: var(--muted); margin-top: 20px; max-width: 320px">
+              Join hundreds of athletes who've found their movement discipline
+              at APEX Academy.
+            </p>
+          </div>
+          <div
+            style="color: var(--muted); font-size: 12px; letter-spacing: 2px"
+          >
+            © 2025 APEX ACADEMY
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-panel">
+        <div class="auth-form-wrap">
+          <!-- <div class="nav-logo" style="margin-bottom: 32px">
+            <div class="nav-logo-icon">A</div>
+            <span class="nav-logo-text">APEX<span>ACADEMY</span></span>
+          </div> -->
+          <h1 class="auth-title">WELCOME BACK</h1>
+          <p class="auth-sub">Sign in to access your dashboard and bookings.</p>
+
+          <div
+            id="error-msg"
+            style="
+              display: none;
+              background: rgba(255, 100, 100, 0.1);
+              border: 1px solid rgba(255, 100, 100, 0.3);
+              border-radius: 8px;
+              padding: 12px 16px;
+              font-size: 14px;
+              color: #ff6464;
+              margin-bottom: 20px;
+            "
+          ></div>
+
+          <form id="login-form">
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input
+                type="email"
+                class="form-control"
+                name="email"
+                placeholder="you@email.com"
+                required
+                autofocus
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <div style="position: relative">
+                <input
+                  type="password"
+                  class="form-control"
+                  name="password"
+                  id="pw-field"
+                  placeholder="Your password"
+                  required
+                  style="padding-right: 48px"
+                />
+                <button
+                  type="button"
+                  onclick="togglePw()"
+                  style="
+                    position: absolute;
+                    right: 14px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    background: none;
+                    border: none;
+                    color: var(--muted);
+                    cursor: pointer;
+                    font-size: 16px;
+                  "
+                  id="pw-toggle"
+                >
+                  👁
+                </button>
+              </div>
+            </div>
+            <button
+              type="submit"
+              class="btn-primary"
+              style="width: 100%; justify-content: center; margin-top: 8px"
+              id="login-btn"
+            >
+              Sign In →
+            </button>
+          </form>
+
+          <div class="auth-divider">or</div>
+          <a
+            href="/#trial"
+            class="btn-ghost"
+            style="width: 100%; justify-content: center"
+            >Book Free Trial Without Account</a
+          >
+
+          <div class="auth-switch">
+            Don't have an account? <a href="/register">Create one free →</a>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+      function validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+      }
+
+      function togglePw() {
+        const f = document.getElementById("pw-field");
+        const b = document.getElementById("pw-toggle");
+        f.type = f.type === "password" ? "text" : "password";
+        b.textContent = f.type === "password" ? "👁" : "🙈";
+      }
+
+      document
+        .getElementById("login-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const btn = document.getElementById("login-btn");
+          const errEl = document.getElementById("error-msg");
+          errEl.style.display = "none";
+
+          // Validate email format
+          const emailInput = e.target.email.value.trim();
+          if (!validateEmail(emailInput)) {
+            errEl.textContent = "Please enter a valid email address";
+            errEl.style.display = "block";
+            e.target.email.focus();
+            return;
+          }
+
+          // Validate password
+          const passwordInput = e.target.password.value;
+          if (!passwordInput) {
+            errEl.textContent = "Please enter your password";
+            errEl.style.display = "block";
+            e.target.password.focus();
+            return;
+          }
+
+          btn.textContent = "Signing in...";
+          btn.disabled = true;
+
+          const data = {
+            email: emailInput,
+            password: passwordInput,
+          };
+
+          try {
+            const res = await apiCall("/api/auth/login", "POST", data);
+            showToast(`Welcome back!`, "success");
+            setTimeout(() => (window.location.href = res.redirect), 800);
+          } catch (err) {
+            errEl.textContent = err.message;
+            errEl.style.display = "block";
+            btn.textContent = "Sign In →";
+            btn.disabled = false;
+          }
+        });
+
+      // Redirect if already logged in
+      (async () => {
+        const res = await fetch("/api/auth/me");
+        const d = await res.json();
+        if (d.authenticated) {
+          window.location.href =
+            d.user.role === "admin" ? "/admin" : "/student/dashboard";
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Programs – APEX Movement Sports Academy</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      /* Programs page */
+      .programs-hero {
+        background: var(--dark);
+        padding: 120px 48px 64px;
+        position: relative;
+        border-bottom: 1px solid var(--border);
+      }
+      .programs-hero::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(
+          to bottom,
+          transparent,
+          var(--lime),
+          transparent
+        );
+      }
+      .programs-hero .section-tag {
+        margin-bottom: 16px;
+      }
+      .programs-hero h1 {
+        font-family: "Bebas Neue";
+        font-size: clamp(48px, 6vw, 72px);
+        letter-spacing: 4px;
+        line-height: 0.95;
+        margin-bottom: 16px;
+      }
+      .programs-hero p {
+        color: var(--muted);
+        max-width: 520px;
+        font-size: 15px;
+        line-height: 1.7;
+      }
+
+      .programs-section {
+        background: var(--black);
+        padding: 48px 48px 80px;
+      }
+      .programs-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 40px;
+      }
+      .programs-filters .filter-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+      .programs-filters .filter-group-label {
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-right: 4px;
+      }
+      .programs-filters .filter-btn {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        color: var(--white);
+        padding: 10px 18px;
+        border-radius: var(--radius);
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.25s;
+      }
+      .programs-filters .filter-btn:hover {
+        border-color: var(--lime);
+        color: var(--lime);
+      }
+      .programs-filters .filter-btn.active {
+        background: var(--lime-dim);
+        border-color: var(--lime);
+        color: var(--lime);
+      }
+
+      .programs-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+      .program-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        transition:
+          transform 0.3s,
+          box-shadow 0.3s;
+      }
+      .program-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4);
+      }
+      .program-card-header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .program-card-name {
+        font-family: "Bebas Neue";
+        font-size: 24px;
+        letter-spacing: 2px;
+        margin-bottom: 12px;
+        line-height: 1.1;
+      }
+      .program-card-meta {
+        color: var(--muted);
+        font-size: 13px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .program-card-fees {
+        font-weight: 600;
+        color: var(--lime);
+        font-size: 15px;
+        margin-bottom: 16px;
+      }
+      .program-card-spots {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .program-card-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .program-card-actions .btn-enroll {
+        background: var(--lime);
+        color: var(--black);
+        border: none;
+        padding: 10px 20px;
+        border-radius: var(--radius);
+        font-family: "DM Sans", sans-serif;
+        font-weight: 600;
+        font-size: 13px;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+      .program-card-actions .btn-enroll:hover {
+        opacity: 0.9;
+      }
+      .program-card-actions .btn-enroll:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .badge-enrolled {
+        display: inline-block;
+        background: rgba(72, 199, 142, 0.2);
+        color: #48c78e;
+        padding: 8px 14px;
+        border-radius: var(--radius);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 1px;
+      }
+
+      .programs-loading {
+        text-align: center;
+        padding: 80px 24px;
+        color: var(--muted);
+      }
+      .programs-loading .spinner {
+        width: 48px;
+        height: 48px;
+        border: 3px solid var(--border);
+        border-top-color: var(--lime);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 20px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .programs-empty {
+        text-align: center;
+        padding: 80px 24px;
+        color: var(--muted);
+        font-size: 16px;
+      }
+      .programs-empty p {
+        margin-bottom: 8px;
+      }
+
+      @media (max-width: 1100px) {
+        .programs-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 700px) {
+        .programs-hero,
+        .programs-section {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
+        .programs-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/" class="nav-logo">
+        <div class="nav-logo-icon">A</div>
+        <span class="nav-logo-text">APEX<span>Academy</span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/programs">Programs</a></li>
+        <li><a href="/coaches">Coaches</a></li>
+        <li><a href="/schedule">Schedule</a></li>
+        <li><a href="/events">Events</a></li>
+        <li><a href="/forum">Forum</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="/login" class="btn-ghost btn-sm">Login</a>
+        <a href="/register" class="btn-primary btn-sm">Join Now</a>
+      </div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </nav>
+    <div class="mobile-menu">
+      <a href="/">Home</a><a href="/about">About</a
+      ><a href="/programs">Programs</a> <a href="/coaches">Coaches</a
+      ><a href="/schedule">Schedule</a> <a href="/events">Events</a
+      ><a href="/forum">Forum</a><a href="/contact">Contact</a><a href="/login">Login</a>
+    </div>
+
+    <section class="programs-hero">
+      <div class="section-tag">Movement Programs</div>
+      <h1>OUR PROGRAMS</h1>
+      <p>
+        Train in Parkour, Calisthenics, Rock Climbing and Acrobatics. Choose
+        your discipline and skill level to find the right program for you.
+      </p>
+    </section>
+
+    <section class="programs-section">
+      <div class="programs-filters">
+        <div class="filter-group">
+          <span class="filter-group-label">Sport</span>
+          <button
+            type="button"
+            class="filter-btn active"
+            data-filter="sport"
+            data-value="all"
+          >
+            All
+          </button>
+          <button
+            type="button"
+            class="filter-btn"
+            data-filter="sport"
+            data-value="parkour"
+          >
+            Parkour
+          </button>
+          <button
+            type="button"
+            class="filter-btn"
+            data-filter="sport"
+            data-value="calisthenics"
+          >
+            Calisthenics
+          </button>
+          <button
+            type="button"
+            class="filter-btn"
+            data-filter="sport"
+            data-value="rock_climbing"
+          >
+            Rock Climbing
+          </button>
+          <button
+            type="button"
+            class="filter-btn"
+            data-filter="sport"
+            data-value="acrobatics"
+          >
+            Acrobatics
+          </button>
+        </div>
+        <div class="filter-group" style="margin-left: 24px">
+          <span class="filter-group-label">Level</span>
+          <button
+            type="button"
+            class="filter-btn active"
+            data-filter="level"
+            data-value="all"
+          >
+            All
+          </button>
+          <button
+            type="button"
+            class="filter-btn"
+            data-filter="level"
+            data-value="beginner"
+          >
+            Beginner
+          </button>
+          <button
+            type="button"
+            class="filter-btn"
+            data-filter="level"
+            data-value="intermediate"
+          >
+            Intermediate
+          </button>
+          <button
+            type="button"
+            class="filter-btn"
+            data-filter="level"
+            data-value="advanced"
+          >
+            Advanced
+          </button>
+        </div>
+      </div>
+
+      <div id="programs-loading" class="programs-loading">
+        <div class="spinner"></div>
+        <p>Loading programs…</p>
+      </div>
+      <div id="programs-empty" class="programs-empty" style="display: none">
+        <p>No programs match your filters.</p>
+        <p>Try changing sport or skill level.</p>
+      </div>
+      <div id="programs-grid" class="programs-grid" style="display: none"></div>
+    </section>
+
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/" class="nav-logo" style="margin-bottom: 0">
+            <div class="nav-logo-icon">A</div>
+            <span class="nav-logo-text">APEX<span>ACADEMY</span></span>
+          </a>
+          <p>
+            A movement sports academy dedicated to developing athletes through
+            Parkour, Calisthenics, Rock Climbing and Acrobatics.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Disciplines</h4>
+          <a href="/programs?sport=parkour">Parkour</a>
+          <a href="/programs?sport=calisthenics">Calisthenics</a>
+          <a href="/programs?sport=rock_climbing">Rock Climbing</a>
+          <a href="/programs?sport=acrobatics">Acrobatics</a>
+        </div>
+        <div class="footer-col">
+          <h4>Academy</h4>
+          <a href="/about">About Us</a>
+          <a href="/coaches">Our Coaches</a>
+          <a href="/schedule">Schedule</a>
+          <a href="/events">Events</a>
+        </div>
+        <div class="footer-col">
+          <h4>Join</h4>
+          <a href="/register">Register</a>
+          <a href="/login">Login</a>
+          <a href="/#trial">Free Trial</a>
+          <a href="/apply-for-coach">Become a Coach</a>
+          <a href="/contact">Contact</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 Apex Movement Academy. All rights reserved.</p>
+        <p style="color: var(--lime); font-size: 12px; letter-spacing: 1px">
+          MOVE BEYOND LIMITS
+        </p>
+      </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+      (function () {
+        let allPrograms = [];
+        let enrolledProgramIds = new Set();
+        let filterSport = "all";
+        let filterLevel = "all";
+
+        const gridEl = document.getElementById("programs-grid");
+        const loadingEl = document.getElementById("programs-loading");
+        const emptyEl = document.getElementById("programs-empty");
+
+        function getParams() {
+          const params = new URLSearchParams(window.location.search);
+          return { sport: params.get("sport") || "" };
+        }
+
+        function applyUrlSport() {
+          const { sport } = getParams();
+          if (!sport) return;
+          const normalized = sport.toLowerCase().replace(/\s+/g, "_");
+          const btn = document.querySelector(
+            `.filter-btn[data-filter="sport"][data-value="${normalized}"]`,
+          );
+          if (btn) {
+            document
+              .querySelectorAll('.filter-btn[data-filter="sport"]')
+              .forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            filterSport = normalized;
+          }
+        }
+
+        function filteredPrograms() {
+          return allPrograms.filter((p) => {
+            const matchSport = filterSport === "all" || p.sport === filterSport;
+            const matchLevel =
+              filterLevel === "all" ||
+              (p.skill_level && p.skill_level.toLowerCase() === filterLevel);
+            return matchSport && matchLevel;
+          });
+        }
+
+        function renderCards() {
+          const list = filteredPrograms();
+          loadingEl.style.display = "none";
+          if (list.length === 0) {
+            emptyEl.style.display = "block";
+            gridEl.style.display = "none";
+            return;
+          }
+          emptyEl.style.display = "none";
+          gridEl.style.display = "grid";
+          gridEl.innerHTML = list
+            .map((p) => {
+              const spots = Math.max(
+                0,
+                (p.max_capacity || 0) - (p.current_enrolled || 0),
+              );
+              const spotsText = spots === 0 ? "Full" : `${spots} spots left`;
+              const isEnrolled = enrolledProgramIds.has(p.program_id);
+              const feesText =
+                p.fees != null ? `₹ ${Number(p.fees).toLocaleString()}` : "—";
+              const coachName = p.coach_name || "TBC";
+              const ageGroup = p.age_group || "—";
+              const level = (p.skill_level || "").toLowerCase();
+              const sportBadgeHtml =
+                typeof sportBadge === "function"
+                  ? sportBadge(p.sport || "")
+                  : "";
+              const levelBadgeHtml =
+                level && typeof levelBadge === "function"
+                  ? levelBadge(level)
+                  : "";
+
+              let actionHtml;
+              if (isEnrolled) {
+                actionHtml =
+                  '<span class="badge-enrolled">Already Enrolled</span>';
+              } else {
+                actionHtml = `<button type="button" class="btn-enroll" data-program-id="${p.program_id}">Enroll Now</button>`;
+              }
+
+              return `
+                <div class="program-card reveal" data-program-id="${p.program_id}">
+                  <div class="program-card-header">
+                    ${sportBadgeHtml}
+                    ${levelBadgeHtml}
+                  </div>
+                  <div class="program-card-name">${p.name || "Program"}</div>
+                  <div class="program-card-meta">
+                    <span>Age: ${ageGroup}</span>
+                    <span>Coach: ${coachName}</span>
+                  </div>
+                  <div class="program-card-fees">${feesText}</div>
+                  <div class="program-card-spots">${spotsText}</div>
+                  <div class="program-card-actions">${actionHtml}</div>
+                </div>`;
+            })
+            .join("");
+
+          gridEl.querySelectorAll(".btn-enroll").forEach((btn) => {
+            btn.addEventListener("click", handleEnroll);
+          });
+          if (typeof initReveal === "function") initReveal();
+        }
+
+        async function handleEnroll(e) {
+          const btn = e.target;
+          const programId = btn.dataset.programId;
+          const programIdNum = parseInt(programId, 10);
+          if (!programId) return;
+          if (!currentUser) {
+            window.location.href = "/login";
+            return;
+          }
+          
+          // Get program details
+          const program = allPrograms.find((p) => p.program_id === programIdNum);
+          if (!program) {
+            showToast("Program not found", "error");
+            return;
+          }
+
+          // Check if program has fees
+          if (program.fees && Number(program.fees) > 0) {
+            // Redirect to payment page
+            const params = new URLSearchParams();
+            params.set("type", "program");
+            params.set("program_id", program.program_id);
+            params.set("program", program.name);
+            params.set("price", Number(program.fees));
+            params.set("coach", program.coach_name || "TBC");
+            params.set("level", program.skill_level || "");
+            params.set("sport", program.sport || "");
+            window.location.href = `/student/payment?${params.toString()}`;
+            return;
+          }
+
+          // Free program: enroll directly
+          btn.disabled = true;
+          try {
+            const result = await apiCall("/api/programs/enroll", "POST", {
+              program_id: programIdNum,
+            });
+            showToast("Enrolled successfully!", "success");
+            enrolledProgramIds.add(programIdNum);
+
+            if (program) {
+              if (result && typeof result.current_enrolled === "number") {
+                program.current_enrolled = result.current_enrolled;
+                if (typeof result.max_capacity === "number") {
+                  program.max_capacity = result.max_capacity;
+                }
+              } else {
+                const next = (program.current_enrolled || 0) + 1;
+                const max = program.max_capacity || next;
+                program.current_enrolled = Math.min(next, max);
+              }
+            }
+
+            renderCards();
+          } catch (err) {
+            if (
+              err.message &&
+              err.message.toLowerCase().includes("already enrolled")
+            ) {
+              enrolledProgramIds.add(programIdNum);
+              renderCards();
+            } else {
+              showToast(err.message || "Enrollment failed", "error");
+            }
+            btn.disabled = false;
+          }
+        }
+
+        async function loadEnrolled() {
+          try {
+            const data = await apiCall("/api/bookings/my");
+            (data.enrollments || []).forEach((e) => {
+              if (e.status === "active" && e.program_id)
+                enrolledProgramIds.add(e.program_id);
+            });
+          } catch (_) {}
+        }
+
+        async function load() {
+          applyUrlSport();
+          document.querySelectorAll(".filter-btn").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              const filter = btn.dataset.filter;
+              const value = btn.dataset.value;
+              document
+                .querySelectorAll(`.filter-btn[data-filter="${filter}"]`)
+                .forEach((b) => b.classList.remove("active"));
+              btn.classList.add("active");
+              if (filter === "sport") filterSport = value;
+              else if (filter === "level") filterLevel = value;
+              renderCards();
+            });
+          });
+
+          try {
+            const [programsRes, authRes] = await Promise.all([
+              fetch("/api/programs"),
+              fetch("/api/auth/me"),
+            ]);
+            const programsData = await programsRes.json();
+            const authData = await authRes.json();
+
+            if (!programsRes.ok)
+              throw new Error(programsData.error || "Failed to load programs");
+            allPrograms = Array.isArray(programsData) ? programsData : [];
+
+            if (authData.authenticated && authData.user) {
+              currentUser = authData.user;
+              updateNavAuth();
+              await loadEnrolled();
+            }
+
+            renderCards();
+          } catch (err) {
+            loadingEl.style.display = "none";
+            gridEl.style.display = "none";
+            emptyEl.style.display = "block";
+            emptyEl.innerHTML = `<p>Could not load programs.</p><p>${err.message || ""}</p>`;
+          }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+          checkAuth();
+          load();
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coach Dashboard – APEX Movement Sports Academy</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      .dash-layout {
+        display: flex;
+        min-height: 100vh;
+      }
+      .dash-sidebar {
+        width: 240px;
+        background: var(--dark);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 100;
+        transition: transform 0.3s, width 0.3s;
+      }
+      .dash-sidebar-open .dash-sidebar {
+        transform: translateX(0);
+      }
+      .dash-logo {
+        padding: 24px;
+        border-bottom: 1px solid var(--border);
+      }
+      .dash-logo a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+      }
+      .dash-logo-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--lime);
+        clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Bebas Neue";
+        color: var(--black);
+        font-size: 16px;
+      }
+      .dash-logo-text {
+        font-family: "Bebas Neue";
+        font-size: 20px;
+        letter-spacing: 2px;
+        color: var(--white);
+      }
+      .dash-logo-text span {
+        color: var(--lime);
+      }
+      .dash-user {
+        padding: 24px;
+        border-bottom: 1px solid var(--border);
+      }
+      .dash-user-name {
+        font-weight: 600;
+        font-size: 15px;
+        margin-bottom: 6px;
+      }
+      .dash-user-role {
+        display: inline-block;
+        background: var(--lime-dim);
+        color: var(--lime);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 20px;
+      }
+      .dash-nav {
+        flex: 1;
+        padding: 16px 0;
+        overflow-y: auto;
+      }
+      .dash-nav a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 24px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+      }
+      .dash-nav a:hover {
+        color: var(--white);
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .dash-nav a.active {
+        color: var(--lime);
+        background: rgba(198, 241, 53, 0.06);
+        border-left-color: var(--lime);
+      }
+      .dash-nav a.logout {
+        color: #ff6464;
+      }
+      .dash-nav a.logout:hover {
+        background: rgba(255, 100, 100, 0.1);
+      }
+      .dash-sidebar-toggle {
+        display: none;
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 101;
+        width: 44px;
+        height: 44px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--white);
+        font-size: 20px;
+        cursor: pointer;
+      }
+      .dash-main {
+        flex: 1;
+        margin-left: 240px;
+        background: var(--dark);
+        padding: 100px 48px 80px;
+        overflow-y: auto;
+        position: relative;
+        z-index: 1;
+      }
+      .dash-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        position: relative;
+        z-index: 10;
+        gap: 24px;
+      }
+      .dash-header h1 {
+        font-family: "Bebas Neue";
+        font-size: 36px;
+        letter-spacing: 2px;
+        margin: 0;
+      }
+      .dash-header h1 span {
+        color: var(--lime);
+      }
+      .dash-header button {
+        position: relative;
+        z-index: 15;
+      }
+      .dash-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-bottom: 48px;
+      }
+      .dash-stat {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .dash-stat:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+      }
+      .dash-stat-num {
+        font-family: "Bebas Neue";
+        font-size: 36px;
+        color: var(--lime);
+        line-height: 1;
+        margin-bottom: 8px;
+      }
+      .dash-stat-label {
+        font-size: 14px;
+        color: var(--muted);
+        letter-spacing: 0.5px;
+      }
+      .dash-section {
+        margin-bottom: 48px;
+      }
+      .dash-section h2 {
+        font-family: "Bebas Neue";
+        font-size: 24px;
+        letter-spacing: 2px;
+        margin: 0 0 8px 0;
+      }
+      .dash-section h2 span {
+        color: var(--lime);
+      }
+      .section-sub {
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+      .programs-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+      }
+      .program-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .program-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      }
+      .program-name {
+        font-family: "Bebas Neue";
+        font-size: 20px;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+      }
+      .program-info {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .program-info-row {
+        font-size: 14px;
+        color: var(--muted);
+        display: flex;
+        justify-content: space-between;
+      }
+      .program-students {
+        font-weight: 600;
+        color: var(--lime);
+        font-size: 14px;
+      }
+      .schedule-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .schedule-item {
+        background: var(--card);
+        border-left: 4px solid var(--lime);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--lime);
+        border-radius: var(--radius);
+        padding: 16px;
+        display: grid;
+        grid-template-columns: 120px 1fr auto;
+        gap: 20px;
+        align-items: center;
+      }
+      .schedule-day {
+        font-family: "Bebas Neue";
+        font-size: 18px;
+        color: var(--lime);
+      }
+      .schedule-details {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .schedule-program {
+        font-weight: 600;
+        font-size: 15px;
+      }
+      .schedule-location {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .schedule-time {
+        font-size: 14px;
+        color: var(--muted);
+        text-align: right;
+      }
+      .students-table {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .table-header {
+        display: grid;
+        grid-template-columns: 2fr 1.5fr 1.5fr;
+        gap: 16px;
+        padding: 16px 20px;
+        background: rgba(0, 0, 0, 0.3);
+        border-bottom: 1px solid var(--border);
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--lime);
+      }
+      .table-row {
+        display: grid;
+        grid-template-columns: 2fr 1.5fr 1.5fr;
+        gap: 16px;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        align-items: center;
+      }
+      .table-row:last-child {
+        border-bottom: none;
+      }
+      .profile-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        max-width: 600px;
+      }
+      .profile-field {
+        margin-bottom: 20px;
+      }
+      .profile-field label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+      .profile-field input,
+      .profile-field textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: rgba(0, 0, 0, 0.2);
+        color: var(--white);
+        font-size: 14px;
+      }
+      .profile-field textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+      .btn-save {
+        background: var(--lime);
+        color: var(--black);
+        padding: 12px 24px;
+        border: none;
+        border-radius: var(--radius);
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .btn-save:hover {
+        opacity: 0.9;
+      }
+      .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: var(--muted);
+      }
+      .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 16px 24px;
+        border-radius: var(--radius);
+        font-weight: 600;
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+      }
+      .toast.success {
+        background: var(--lime);
+        color: var(--black);
+      }
+      .toast.error {
+        background: #ff6464;
+        color: white;
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @media (max-width: 900px) {
+        .dash-main {
+          margin-left: 0;
+          padding: 100px 24px 80px;
+        }
+        .dash-sidebar {
+          transform: translateX(-100%);
+          width: 240px;
+        }
+        .dash-sidebar-open .dash-sidebar {
+          transform: translateX(0);
+        }
+        .dash-sidebar-toggle {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .dash-stats {
+          grid-template-columns: 1fr;
+        }
+        .programs-grid {
+          grid-template-columns: 1fr;
+        }
+        .schedule-item {
+          grid-template-columns: 1fr;
+        }
+        .table-header,
+        .table-row {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 600px) {
+        .dash-main {
+          padding: 100px 16px 60px;
+        }
+      }
+    </style>
+  </head>
+  <body class="dash-body">
+    <button type="button" class="dash-sidebar-toggle" id="sidebar-toggle" aria-label="Toggle menu">☰</button>
+
+    <div class="dash-layout" id="dash-layout">
+      <aside class="dash-sidebar">
+        <div class="dash-logo">
+          <a href="/">
+            <div class="dash-logo-icon">A</div>
+            <span class="dash-logo-text">ATHLE<span>TICA</span></span>
+          </a>
+        </div>
+        <div class="dash-user">
+          <div class="dash-user-name" id="user-name">—</div>
+          <span class="dash-user-role">Coach</span>
+        </div>
+        <nav class="dash-nav">
+          <a href="/coach/dashboard" class="active">Dashboard</a>
+          <a href="/forum">Forum</a>
+          <a href="/programs">Programs</a>
+          <a href="/coaches">Coaches</a>
+          <a href="/schedule">Schedule</a>
+          <a href="/">Home</a>
+          <a class="logout" style="cursor: pointer;" onclick="handleLogout()">Logout</a>
+        </nav>
+      </aside>
+
+      <main class="dash-main">
+        <div class="dash-header">
+          <h1>EDIT <span>DETAILS</span></h1>
+        </div>
+
+        <div class="dash-section">
+          <p class="section-sub">Update your coach information</p>
+          <div class="profile-card">
+            <form id="profile-form">
+              <div class="profile-field">
+                <label>Specialization</label>
+                <input type="text" name="specialization" id="field-specialization" placeholder="e.g., Parkour, Calisthenics" />
+              </div>
+              <div class="profile-field">
+                <label>Bio</label>
+                <textarea name="bio" id="field-bio" placeholder="Tell students about yourself..."></textarea>
+              </div>
+              <div class="profile-field">
+                <label>Experience (years)</label>
+                <input type="number" name="experience_years" id="field-experience" min="0" />
+              </div>
+              <button type="submit" class="btn-save">Save Changes</button>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+      let coachCurrentUser = null;
+      const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+      async function init() {
+        console.log("Coach dashboard init starting...");
+        const authRes = await fetch("/api/auth/me");
+        const auth = await authRes.json();
+        console.log("Auth check:", auth);
+        
+        if (!auth.authenticated || !auth.user) {
+          window.location.href = "/login";
+          return;
+        }
+        if (auth.user.role !== "coach") {
+          window.location.href = auth.user.role === "admin" ? "/admin" : "/student/dashboard";
+          return;
+        }
+        coachCurrentUser = auth.user;
+        document.getElementById("user-name").textContent = coachCurrentUser.name;
+
+        try {
+          // Load coach profile data
+          const coachRes = await fetch("/api/coaches/my/profile");
+          console.log("Coach profile response status:", coachRes.status);
+          const coachProfile = await coachRes.json();
+          console.log("Coach profile data:", coachProfile);
+
+          // Load profile data
+          if (coachProfile) {
+            document.getElementById("field-specialization").value = coachProfile.specialization || "";
+            document.getElementById("field-bio").value = coachProfile.bio || "";
+            document.getElementById("field-experience").value = coachProfile.experience_years || 0;
+          }
+        } catch (err) {
+          console.error("Error loading profile:", err);
+          showToast("Error loading profile data", "error");
+        }
+
+        // Attach event listeners after DOM is ready
+        attachEventListeners();
+        console.log("Event listeners attached");
+      }
+
+      function attachEventListeners() {
+        console.log("Attaching event listeners...");
+
+        // Sidebar toggle
+        const sidebarToggle = document.getElementById("sidebar-toggle");
+        if (sidebarToggle) {
+          sidebarToggle.addEventListener("click", () => {
+            const layout = document.getElementById("dash-layout");
+            if (layout) {
+              layout.classList.toggle("dash-sidebar-open");
+            }
+          });
+        }
+
+        // Profile form
+        const profileForm = document.getElementById("profile-form");
+        console.log("Profile form element:", profileForm);
+        if (profileForm) {
+          profileForm.addEventListener("submit", async (e) => {
+            console.log("🟢 Profile form submitted");
+            e.preventDefault();
+            
+            const specialization = document.getElementById("field-specialization").value;
+            const bio = document.getElementById("field-bio").value;
+            const experience = document.getElementById("field-experience").value;
+            
+            console.log("🟢 Form data:", { specialization, bio, experience });
+            
+            if (!specialization || !bio) {
+              showToast("Specialization and bio are required", "error");
+              return;
+            }
+            
+            const formData = {
+              specialization: specialization,
+              bio: bio,
+              experience_years: parseInt(experience) || 0
+            };
+
+            try {
+              console.log("🟢 Sending PUT request to /api/coaches/my/profile");
+              const res = await fetch("/api/coaches/my/profile", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+              });
+              
+              console.log("🟢 Response status:", res.status);
+              const result = await res.json();
+              console.log("🟢 Response data:", result);
+              
+              if (res.ok && result.success) {
+                showToast("✓ Profile updated successfully!", "success");
+              } else {
+                showToast(result.error || "Error updating profile", "error");
+              }
+            } catch (err) {
+              console.error("🟢 Error:", err);
+              showToast("Error updating profile: " + err.message, "error");
+            }
+          });
+        } else {
+          console.warn("Profile form not found!");
+        }
+      }
+
+      function showToast(msg, type) {
+        console.log("Toast:", type, msg);
+        const container = document.querySelector(".toast-container") || createToastContainer();
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<span class="toast-icon">${type === "success" ? "✓" : "✕"}</span><span>${msg}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          toast.style.transform = "translateX(100px)";
+          toast.style.transition = "0.3s";
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
+
+      function createToastContainer() {
+        const container = document.createElement("div");
+        container.className = "toast-container";
+        document.body.appendChild(container);
+        return container;
+      }
+
+      // Define logout function - called by onclick on button
+      async function handleLogout() {
+        console.log("🔴 Logout clicked!");
+        try {
+          const res = await fetch("/api/auth/logout", { method: "POST" });
+          console.log("🔴 Logout API response:", res.status);
+          showToast("Logged out successfully", "success");
+          setTimeout(() => {
+            console.log("🔴 Redirecting to /login");
+            window.location.href = "/login";
+          }, 500);
+        } catch (err) {
+          console.error("🔴 Logout error:", err);
+          showToast("Error logging out", "error");
+          // Force redirect anyway
+          window.location.href = "/login";
+        }
+      }
+
+      // Initialize on page load
+      console.log("Script loaded, doc ready state:", document.readyState);
+      if (document.readyState === 'loading') {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
+    </script>
+  </body>
+</html>

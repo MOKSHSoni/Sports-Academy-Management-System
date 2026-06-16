@@ -1,0 +1,35 @@
+<nav>
+    <a href="/" class="nav-logo">
+      <div class="nav-logo-icon">A</div>
+      <span class="nav-logo-text">APEX<span>ACADEMY</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About</a></li>
+      <li><a href="/programs">Programs</a></li>
+      <li><a href="/coaches">Coaches</a></li>
+      <li><a href="/schedule">Schedule</a></li>
+      <li><a href="/events">Events</a></li>
+      <li><a href="/forum">Forum</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <!-- Populated by main.js checkAuth() -->
+      <a href="/login" class="btn-ghost btn-sm">Login</a>
+      <a href="/register" class="btn-primary btn-sm">Join Now</a>
+    </div>
+    <button class="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="mobile-menu">
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+    <a href="/programs">Programs</a>
+    <a href="/coaches">Coaches</a>
+    <a href="/schedule">Schedule</a>
+    <a href="/events">Events</a>
+    <a href="/forum">Forum</a>
+    <a href="/contact">Contact</a>
+    <a href="/login">Login</a>
+  </div>

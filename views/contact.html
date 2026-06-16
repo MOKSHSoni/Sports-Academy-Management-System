@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact – APEX Movement Sports Academy</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      .contact-hero {
+        background: var(--dark);
+        padding: 120px 48px 64px;
+        position: relative;
+        border-bottom: 1px solid var(--border);
+      }
+      .contact-hero::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(
+          to bottom,
+          transparent,
+          var(--lime),
+          transparent
+        );
+      }
+      .contact-hero .section-tag {
+        margin-bottom: 16px;
+      }
+      .contact-hero h1 {
+        font-family: "Bebas Neue";
+        font-size: clamp(48px, 6vw, 72px);
+        letter-spacing: 4px;
+        line-height: 0.95;
+        margin-bottom: 16px;
+      }
+      .contact-hero h1 span {
+        color: var(--lime);
+      }
+      .contact-hero p {
+        color: var(--muted);
+        max-width: 560px;
+        font-size: 15px;
+        line-height: 1.7;
+      }
+
+      .contact-section {
+        background: var(--black);
+        padding: 48px 48px 80px;
+      }
+      .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 48px;
+        max-width: 1100px;
+      }
+      .contact-info h2 {
+        font-family: "Bebas Neue";
+        font-size: 32px;
+        letter-spacing: 2px;
+        margin-bottom: 32px;
+      }
+      .contact-info h2 span {
+        color: var(--lime);
+      }
+      .contact-info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 24px;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.6;
+      }
+      .contact-info-item .icon {
+        width: 40px;
+        height: 40px;
+        background: var(--lime-dim);
+        border: 1px solid rgba(198, 241, 53, 0.2);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 18px;
+        color: var(--lime);
+      }
+      .contact-hours {
+        margin-top: 32px;
+        margin-bottom: 32px;
+      }
+      .contact-hours h3 {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .contact-hours-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .contact-hours-table td {
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .contact-hours-table td:last-child {
+        text-align: right;
+        color: var(--white);
+      }
+      .contact-social {
+        display: flex;
+        gap: 12px;
+      }
+      .contact-social a {
+        width: 44px;
+        height: 44px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 18px;
+        transition: all 0.2s;
+      }
+      .contact-social a:hover {
+        border-color: var(--lime);
+        color: var(--lime);
+      }
+
+      .contact-form-wrap {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 32px;
+      }
+      .contact-form .form-group:last-of-type {
+        margin-bottom: 24px;
+      }
+      .contact-form textarea.form-control {
+        min-height: 140px;
+        resize: vertical;
+      }
+      .contact-form .btn-submit {
+        width: 100%;
+        background: var(--lime);
+        color: var(--black);
+        border: none;
+        padding: 14px 24px;
+        border-radius: var(--radius);
+        font-family: "DM Sans", sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+      .contact-form .btn-submit:hover:not(:disabled) {
+        opacity: 0.9;
+      }
+      .contact-form .btn-submit:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+      .contact-form .form-control:invalid {
+        border-color: var(--border);
+      }
+      .contact-form .form-control.error {
+        border-color: #ff6464;
+      }
+
+      @media (max-width: 900px) {
+        .contact-grid {
+          grid-template-columns: 1fr;
+        }
+        .contact-form-wrap {
+          order: -1;
+        }
+      }
+      @media (max-width: 700px) {
+        .contact-hero,
+        .contact-section {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/" class="nav-logo">
+        <div class="nav-logo-icon">A</div>
+        <span class="nav-logo-text">APEX<span>Academy</span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/programs">Programs</a></li>
+        <li><a href="/coaches">Coaches</a></li>
+        <li><a href="/schedule">Schedule</a></li>
+        <li><a href="/events">Events</a></li>
+        <li><a href="/forum">Forum</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="/login" class="btn-ghost btn-sm">Login</a>
+        <a href="/register" class="btn-primary btn-sm">Join Now</a>
+      </div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </nav>
+    <div class="mobile-menu">
+      <a href="/">Home</a><a href="/about">About</a
+      ><a href="/programs">Programs</a> <a href="/coaches">Coaches</a
+      ><a href="/schedule">Schedule</a> <a href="/events">Events</a
+      ><a href="/forum">Forum</a><a href="/contact">Contact</a><a href="/login">Login</a>
+    </div>
+
+    <section class="contact-hero">
+      <div class="section-tag">Reach Out</div>
+      <h1>CONTACT <span>US</span></h1>
+      <p>
+        Questions about our programs, trial sessions or partnerships? Drop us a
+        message and we'll get back to you within 24 hours.
+      </p>
+    </section>
+
+    <section class="contact-section">
+      <div class="contact-grid">
+        <div class="contact-info reveal">
+          <h2>GET IN <span>TOUCH</span></h2>
+          <div class="contact-info-item">
+            <span class="icon">📍</span>
+            <div>
+              <strong style="color: var(--white)">Address</strong><br />
+              Apex Academy of Movement<br />
+              Warehouse 12, Motion Training Yard<br />
+              Off Veera Desai Road, Andheri West<br />
+              Mumbai, Maharashtra 400053
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <span class="icon">📞</span>
+            <div>
+              <strong style="color: var(--white)">Phone</strong><br />
+              +91 9876543210
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <span class="icon">✉️</span>
+            <div>
+              <strong style="color: var(--white)">Email</strong><br />
+              hello@apexacademy.com
+            </div>
+          </div>
+          <div class="contact-hours">
+            <h3>Opening Hours</h3>
+            <table class="contact-hours-table">
+              <tr>
+                <td>Monday – Friday</td>
+                <td>7am – 9pm</td>
+              </tr>
+              <tr>
+                <td>Saturday – Sunday</td>
+                <td>8am – 6pm</td>
+              </tr>
+            </table>
+          </div>
+          `x
+        </div>
+
+        <div class="contact-form-wrap card reveal">
+          <form id="contact-form" class="contact-form" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="name">Full Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                class="form-control"
+                required
+                placeholder="Your name"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="form-control"
+                required
+                placeholder="you@example.com"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="subject">Subject</label>
+              <select id="subject" name="subject" class="form-control" required>
+                <option value="">Select subject</option>
+                <option value="General Enquiry">General Enquiry</option>
+                <option value="Program Info">Program Info</option>
+                <option value="Trial Booking">Trial Booking</option>
+                <option value="Partnership">Partnership</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="message">Message</label>
+              <textarea
+                id="message"
+                name="message"
+                class="form-control"
+                required
+                placeholder="Your message"
+              ></textarea>
+            </div>
+            <button type="submit" class="btn-submit" id="submit-btn">
+              Send Message
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/" class="nav-logo" style="margin-bottom: 0">
+            <div class="nav-logo-icon">A</div>
+            <span class="nav-logo-text">APEX<span>Academy</span></span>
+          </a>
+          <p>
+            A movement sports academy dedicated to developing athletes through
+            Parkour, Calisthenics, Rock Climbing and Acrobatics.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Disciplines</h4>
+          <a href="/programs?sport=parkour">Parkour</a>
+          <a href="/programs?sport=calisthenics">Calisthenics</a>
+          <a href="/programs?sport=rock_climbing">Rock Climbing</a>
+          <a href="/programs?sport=acrobatics">Acrobatics</a>
+        </div>
+        <div class="footer-col">
+          <h4>Academy</h4>
+          <a href="/about">About Us</a>
+          <a href="/coaches">Our Coaches</a>
+          <a href="/schedule">Schedule</a>
+          <a href="/events">Events</a>
+        </div>
+        <div class="footer-col">
+          <h4>Join</h4>
+          <a href="/register">Register</a>
+          <a href="/login">Login</a>
+          <a href="/#trial">Free Trial</a>
+          <a href="/apply-for-coach">Become a Coach</a>
+          <a href="/contact">Contact</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 APEX Movement Academy. All rights reserved.</p>
+        <p style="color: var(--lime); font-size: 12px; letter-spacing: 1px">
+          MOVE BEYOND LIMITS
+        </p>
+      </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        checkAuth();
+        initReveal();
+
+        const form = document.getElementById("contact-form");
+        const submitBtn = document.getElementById("submit-btn");
+
+        function validateEmail(email) {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return emailRegex.test(email);
+        }
+
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const name = form.name.value.trim();
+          const email = form.email.value.trim();
+          const subject = form.subject.value;
+          const message = form.message.value.trim();
+
+          const fields = [form.name, form.email, form.subject, form.message];
+          fields.forEach((f) => f.classList.remove("error"));
+          let valid = true;
+          if (!name) {
+            form.name.classList.add("error");
+            valid = false;
+          }
+          if (!email) {
+            form.email.classList.add("error");
+            valid = false;
+          } else if (!validateEmail(email)) {
+            form.email.classList.add("error");
+            showToast("Please enter a valid email address", "error");
+            valid = false;
+          }
+          if (!subject) {
+            form.subject.classList.add("error");
+            valid = false;
+          }
+          if (!message) {
+            form.message.classList.add("error");
+            valid = false;
+          }
+          if (!valid) return;
+
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Sending...";
+          try {
+            await apiCall("/api/contact", "POST", {
+              name,
+              email,
+              subject,
+              message,
+            });
+            showToast("Message sent! We'll reply within 24 hours.", "success");
+            form.reset();
+          } catch (err) {
+            showToast(err.message || "Failed to send message", "error");
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Send Message";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

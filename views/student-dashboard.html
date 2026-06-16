@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard – APEX Movement Sports Academy</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      .dash-layout {
+        display: flex;
+        min-height: 100vh;
+      }
+      .dash-sidebar {
+        width: 240px;
+        background: var(--dark);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 100;
+        transition:
+          transform 0.3s,
+          width 0.3s;
+      }
+      .dash-sidebar-open .dash-sidebar {
+        transform: translateX(0);
+      }
+      .dash-logo {
+        padding: 24px;
+        border-bottom: 1px solid var(--border);
+      }
+      .dash-logo a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+      }
+      .dash-logo-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--lime);
+        clip-path: polygon(
+          50% 0%,
+          100% 25%,
+          100% 75%,
+          50% 100%,
+          0% 75%,
+          0% 25%
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Bebas Neue";
+        color: var(--black);
+        font-size: 16px;
+      }
+      .dash-logo-text {
+        font-family: "Bebas Neue";
+        font-size: 20px;
+        letter-spacing: 2px;
+        color: var(--white);
+      }
+      .dash-logo-text span {
+        color: var(--lime);
+      }
+      .dash-user {
+        padding: 24px;
+        border-bottom: 1px solid var(--border);
+      }
+      .dash-user-name {
+        font-weight: 600;
+        font-size: 15px;
+        margin-bottom: 6px;
+      }
+      .dash-user-role {
+        display: inline-block;
+        background: var(--lime-dim);
+        color: var(--lime);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 20px;
+      }
+      .dash-nav {
+        flex: 1;
+        padding: 16px 0;
+        overflow-y: auto;
+      }
+      .dash-nav a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 24px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+      }
+      .dash-nav a:hover {
+        color: var(--white);
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .dash-nav a.active {
+        color: var(--lime);
+        background: rgba(198, 241, 53, 0.06);
+        border-left-color: var(--lime);
+      }
+      .dash-nav a.logout {
+        color: #ff6464;
+      }
+      .dash-nav a.logout:hover {
+        background: rgba(255, 100, 100, 0.1);
+      }
+      .dash-sidebar-toggle {
+        display: none;
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 101;
+        width: 44px;
+        height: 44px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--white);
+        font-size: 20px;
+        cursor: pointer;
+      }
+      .dash-main {
+        flex: 1;
+        margin-left: 240px;
+        background: var(--dark);
+        padding: 100px 48px 80px;
+        overflow-y: auto;
+      }
+      .dash-page-header {
+        position: relative;
+        margin-bottom: 40px;
+        padding-bottom: 24px;
+        padding-left: 24px;
+      }
+      .dash-page-header::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(
+          to bottom,
+          transparent,
+          var(--lime),
+          transparent
+        );
+      }
+      .dash-page-header h1 {
+        font-family: "Bebas Neue";
+        font-size: 36px;
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+      }
+      .dash-page-header h1 span {
+        color: var(--lime);
+      }
+      .dash-welcome {
+        margin-bottom: 40px;
+      }
+      .dash-welcome h1 {
+        font-family: "Bebas Neue";
+        font-size: clamp(32px, 4vw, 48px);
+        letter-spacing: 2px;
+        margin-bottom: 12px;
+      }
+      .dash-welcome-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+      .dash-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-bottom: 48px;
+      }
+      .dash-stat {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .dash-stat:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+      }
+      .dash-stat-num {
+        font-family: "Bebas Neue";
+        font-size: 36px;
+        color: var(--lime);
+        line-height: 1;
+        margin-bottom: 8px;
+      }
+      .dash-stat-label {
+        font-size: 14px;
+        color: var(--muted);
+        letter-spacing: 0.5px;
+      }
+      .dash-section {
+        margin-bottom: 48px;
+      }
+      .dash-section h2 {
+        font-family: "Bebas Neue";
+        font-size: 24px;
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+      }
+      .dash-section p.sub {
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 24px;
+      }
+      .dash-section h2 span {
+        color: var(--lime);
+      }
+      .dash-rec-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+      .dash-rec-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        position: relative;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .dash-rec-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      }
+      .dash-rec-header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .dash-rec-name {
+        font-family: "Bebas Neue";
+        font-size: 20px;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+      }
+      .dash-rec-meta {
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 12px;
+      }
+      .dash-rec-fees {
+        font-weight: 600;
+        color: var(--lime);
+        font-size: 14px;
+        margin-bottom: 16px;
+      }
+      .dash-rec-tooltip {
+        display: inline-flex;
+        align-items: center;
+        background: transparent;
+        color: var(--muted);
+        font-size: 11px;
+        cursor: help;
+        margin-left: 8px;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .dash-rec-tooltip:hover {
+        color: var(--lime);
+      }
+      .dash-timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .dash-timeline-item {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px 20px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+        border-left: 4px solid var(--lime);
+      }
+      .dash-timeline-day {
+        font-family: "Bebas Neue";
+        font-size: 18px;
+        color: var(--lime);
+        min-width: 48px;
+      }
+      .dash-timeline-time {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .dash-timeline-name {
+        font-weight: 600;
+        font-size: 15px;
+      }
+      .dash-timeline-loc {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .dash-quick-enroll {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--lime);
+        color: var(--black);
+        padding: 14px 24px;
+        border-radius: var(--radius);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        letter-spacing: 1px;
+        transition: opacity 0.2s;
+      }
+      .dash-quick-enroll:hover {
+        opacity: 0.9;
+      }
+      .btn-enroll-sm {
+        background: var(--lime);
+        color: var(--black);
+        border: none;
+        padding: 8px 16px;
+        border-radius: var(--radius);
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+      .btn-enroll-sm:hover {
+        opacity: 0.9;
+      }
+      .btn-enroll-sm:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      @media (max-width: 900px) {
+        .dash-main {
+          margin-left: 0;
+          padding: 100px 24px 80px;
+        }
+        .dash-sidebar {
+          transform: translateX(-100%);
+          width: 240px;
+        }
+        .dash-sidebar-open .dash-sidebar {
+          transform: translateX(0);
+        }
+        .dash-sidebar-toggle {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .dash-stats {
+          grid-template-columns: 1fr;
+        }
+        .dash-rec-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 600px) {
+        .dash-main {
+          padding: 100px 16px 60px;
+        }
+      }
+    </style>
+  </head>
+  <body class="dash-body">
+    <button
+      type="button"
+      class="dash-sidebar-toggle"
+      id="sidebar-toggle"
+      aria-label="Toggle menu"
+    >
+      ☰
+    </button>
+
+    <div class="dash-layout" id="dash-layout">
+      <aside class="dash-sidebar">
+        <div class="dash-logo">
+          <a href="/">
+            <div class="dash-logo-icon">A</div>
+            <span class="dash-logo-text">ATHLE<span>TICA</span></span>
+          </a>
+        </div>
+        <div class="dash-user">
+          <div class="dash-user-name" id="user-name">—</div>
+          <span class="dash-user-role">Student</span>
+        </div>
+        <nav class="dash-nav">
+          <a href="/student/dashboard" class="active">Dashboard</a>
+          <a href="/student/bookings">My Bookings</a>
+          <a href="/apply-for-coach">Become a Coach</a>
+          <a href="/">←  Back to Website</a>
+          <a href="#" class="logout" id="logout-link">Logout</a>
+        </nav>
+      </aside>
+
+      <main class="dash-main">
+        <div class="dash-page-header">
+          <h1>Welcome back, <span id="welcome-name">—</span></h1>
+          <div class="dash-welcome-meta">
+            <span id="welcome-sport-badge"></span>
+            <span
+              id="welcome-goal"
+              style="color: var(--muted); font-size: 14px"
+            ></span>
+          </div>
+        </div>
+
+        <div class="dash-stats reveal" id="stats-row">
+          <div class="dash-stat">
+            <div class="dash-stat-num" id="stat-enrollments">0</div>
+            <div class="dash-stat-label">Active Enrollments</div>
+          </div>
+          <div class="dash-stat">
+            <div class="dash-stat-num" id="stat-events">0</div>
+            <div class="dash-stat-label">Upcoming Events</div>
+          </div>
+          <div class="dash-stat">
+            <div class="dash-stat-num" id="stat-programs">0</div>
+            <div class="dash-stat-label">Programs Available</div>
+          </div>
+        </div>
+
+        <section class="dash-section reveal">
+          <h2>RECOMMENDED FOR <span>YOU</span></h2>
+          <p class="sub">Programs based on your age group and fitness goal.</p>
+          <div class="dash-rec-grid" id="recommend-grid"></div>
+        </section>
+
+        <section class="dash-section reveal">
+          <h2>MY UPCOMING <span>CLASSES</span></h2>
+          <p class="sub">This week's schedule for your enrolled programs.</p>
+          <div class="dash-timeline" id="upcoming-classes"></div>
+        </section>
+
+        <section class="dash-section reveal">
+          <h2>QUICK <span>ENROLL</span></h2>
+          <a href="/programs" class="dash-quick-enroll">Browse Programs →</a>
+        </section>
+
+        <section class="dash-section reveal" id="coach-apply-section" style="display: none;">
+          <h2>APPLY FOR <span>COACH</span></h2>
+          <p class="sub">Interested in becoming a coach? Submit your application below.</p>
+          
+          <div id="coach-status-display"></div>
+          
+          <form id="coach-apply-form" style="max-width: 600px;">
+            <div style="margin-bottom: 20px;">
+              <label style="display: block; margin-bottom: 8px; font-weight: 600;">Specialization *</label>
+              <input type="text" name="specialization" placeholder="e.g., Parkour, Calisthenics, Rock Climbing" required style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel); color: var(--white);" />
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+              <label style="display: block; margin-bottom: 8px; font-weight: 600;">Bio *</label>
+              <textarea name="bio" placeholder="Tell us about your coaching experience and why you want to be a coach..." rows="5" required style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel); color: var(--white);"></textarea>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+              <label style="display: block; margin-bottom: 8px; font-weight: 600;">Years of Experience</label>
+              <input type="number" name="experience_years" min="0" placeholder="0" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel); color: var(--white);" />
+            </div>
+            
+            <button type="submit" style="background: var(--lime); color: var(--black); padding: 12px 24px; border: none; border-radius: var(--radius); font-weight: 600; cursor: pointer; font-size: 14px;">Submit Application</button>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+      (function () {
+        const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+        function getNext7Days() {
+          const today = new Date();
+          const dayIndex = (today.getDay() + 6) % 7;
+          const order = [];
+          for (let i = 0; i < 7; i++) order.push(DAYS[(dayIndex + i) % 7]);
+          return order;
+        }
+
+        function formatTime(t) {
+          if (!t) return "—";
+          const s = String(t);
+          return s.length >= 5 ? s.slice(0, 5) : s;
+        }
+
+        async function init() {
+          const authRes = await fetch("/api/auth/me");
+          const auth = await authRes.json();
+          if (!auth.authenticated || !auth.user) {
+            window.location.href = "/login";
+            return;
+          }
+          if (auth.user.role === "admin") {
+            window.location.href = "/admin";
+            return;
+          }
+          if (auth.user.role === "coach") {
+            window.location.href = "/forum";
+            return;
+          }
+          currentUser = auth.user;
+
+          document.getElementById("user-name").textContent = currentUser.name;
+          document.getElementById("welcome-name").textContent =
+            currentUser.name.split(" ")[0];
+          const sport = (currentUser.preferred_sport || "")
+            .toLowerCase()
+            .replace(" ", "_");
+          if (sport && typeof sportBadge === "function") {
+            document.getElementById("welcome-sport-badge").innerHTML =
+              sportBadge(sport);
+          }
+          document.getElementById("welcome-goal").textContent =
+            "Fitness goal: " + (currentUser.fitness_goal || "");
+
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          try {
+            const [bookings, programs, recommend, schedule] = await Promise.all(
+              [
+                apiCall("/api/bookings/my"),
+                apiCall("/api/programs"),
+                apiCall("/api/recommend").catch(() => []),
+                apiCall("/api/schedule"),
+              ],
+            );
+
+            const activeEnrollments = (bookings.enrollments || []).filter(
+              (e) => e.status === "active",
+            );
+            const upcomingEvents = (bookings.events || []).filter((e) => {
+              const d = new Date(e.event_date);
+              d.setHours(0, 0, 0, 0);
+              return e.status === "registered" && d >= today;
+            });
+
+            document.getElementById("stat-enrollments").textContent =
+              activeEnrollments.length;
+            document.getElementById("stat-events").textContent =
+              upcomingEvents.length;
+            document.getElementById("stat-programs").textContent =
+              Array.isArray(programs) ? programs.length : 0;
+
+            const recList = Array.isArray(recommend) ? recommend : [];
+            const recGrid = document.getElementById("recommend-grid");
+            if (recList.length === 0) {
+              recGrid.innerHTML =
+                '<p style="color: var(--muted);">No recommendations right now. Update your profile or browse programs.</p>';
+            } else {
+              recGrid.innerHTML = recList
+                .map((p) => {
+                  const sportHtml =
+                    typeof sportBadge === "function"
+                      ? sportBadge(p.sport || "")
+                      : "";
+                  const fees =
+                    p.fees != null
+                      ? "₹ " + Number(p.fees).toLocaleString()
+                      : "—";
+                  const tip =
+                    "Age group: " +
+                    (currentUser.age_group || "") +
+                    ", Fitness goal: " +
+                    (currentUser.fitness_goal || "");
+                  return `
+                    <div class="dash-rec-card">
+                      <div class="dash-rec-header">${sportHtml} <span class="dash-rec-tooltip" title="${(tip || "").replace(/"/g, "&quot;")}">Why recommended?</span></div>
+                      <div class="dash-rec-name">${p.name || "Program"}</div>
+                      <div class="dash-rec-meta">Coach: ${p.coach_name || "—"}</div>
+                      <div class="dash-rec-fees">${fees}</div>
+                      <button type="button" class="btn-enroll-sm" data-program-id="${p.program_id}">Enroll</button>
+                    </div>`;
+                })
+                .join("");
+              recGrid.querySelectorAll(".btn-enroll-sm").forEach((btn) => {
+                btn.addEventListener("click", async () => {
+                  const id = parseInt(btn.dataset.programId, 10);
+                  const program = recList.find((p) => p.program_id === id);
+                  
+                  if (!program) {
+                    showToast("Program not found", "error");
+                    return;
+                  }
+                  
+                  // Check if program has fees
+                  if (program.fees && Number(program.fees) > 0) {
+                    // Redirect to payment page
+                    const params = new URLSearchParams();
+                    params.set("type", "program");
+                    params.set("program_id", program.program_id);
+                    params.set("program", program.name);
+                    params.set("price", Number(program.fees));
+                    params.set("coach", program.coach_name || "TBC");
+                    params.set("level", program.skill_level || "");
+                    params.set("sport", program.sport || "");
+                    window.location.href = `/student/payment?${params.toString()}`;
+                    return;
+                  }
+                  
+                  // Free program: enroll directly
+                  btn.disabled = true;
+                  try {
+                    await apiCall("/api/programs/enroll", "POST", {
+                      program_id: id,
+                    });
+                    showToast("Enrolled successfully!", "success");
+                    btn.textContent = "Enrolled ✓";
+                  } catch (err) {
+                    showToast(err.message || "Enrollment failed", "error");
+                    btn.disabled = false;
+                  }
+                });
+              });
+            }
+
+            const enrolledIds = new Set(
+              activeEnrollments.map((e) => e.program_id),
+            );
+            const allSchedule = Array.isArray(schedule) ? schedule : [];
+            const mySchedule = allSchedule
+              .filter((s) => enrolledIds.has(s.program_id))
+              .sort((a, b) => {
+                const ia = DAYS.indexOf(a.day_of_week);
+                const ib = DAYS.indexOf(b.day_of_week);
+                if (ia !== ib) return ia - ib;
+                return (a.start_time || "").localeCompare(b.start_time || "");
+              });
+
+            const timelineEl = document.getElementById("upcoming-classes");
+            if (mySchedule.length === 0) {
+              timelineEl.innerHTML =
+                '<p style="color: var(--muted);">No upcoming classes. <a href="/programs" style="color: var(--lime);">Enroll in a program</a>.</p>';
+            } else {
+              timelineEl.innerHTML = mySchedule
+                .map((s) => {
+                  const timeStr =
+                    formatTime(s.start_time) + " – " + formatTime(s.end_time);
+                  return `
+                    <div class="dash-timeline-item">
+                      <span class="dash-timeline-day">${s.day_of_week}</span>
+                      <span class="dash-timeline-time">${timeStr}</span>
+                      <span class="dash-timeline-name">${s.program_name || "Class"}</span>
+                      <span class="dash-timeline-loc">📍 ${s.location || "TBC"}</span>
+                    </div>`;
+                })
+                .join("");
+            }
+
+            if (typeof initReveal === "function") initReveal();
+          } catch (err) {
+            showToast(err.message || "Failed to load dashboard", "error");
+          }
+
+          // Load coach application status
+          try {
+            const appRes = await fetch("/api/applications/my");
+            const appData = await appRes.json();
+            const applySection = document.getElementById("coach-apply-section");
+            const statusDisplay = document.getElementById("coach-status-display");
+            
+            if (appData.status && appData.status !== "none") {
+              // Has an application
+              applySection.style.display = "block";
+              document.getElementById("coach-apply-form").style.display = "none";
+              
+              let statusColor = "var(--muted)";
+              if (appData.status === "approved") statusColor = "var(--lime)";
+              if (appData.status === "rejected") statusColor = "#ff6464";
+              
+              statusDisplay.innerHTML = `
+                <div style="background: rgba(198, 241, 53, 0.1); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 20px;">
+                  <div style="font-weight: 600; color: ${statusColor}; text-transform: uppercase; margin-bottom: 8px;">${appData.status}</div>
+                  <div style="color: var(--muted); font-size: 14px;">
+                    Applied: ${new Date(appData.applied_at).toLocaleDateString()}
+                    ${appData.reviewed_at ? `<br/>Reviewed: ${new Date(appData.reviewed_at).toLocaleDateString()}` : ''}
+                  </div>
+                </div>
+              `;
+            } else {
+              // No application - show form
+              applySection.style.display = "block";
+              document.getElementById("coach-apply-form").style.display = "block";
+              statusDisplay.innerHTML = '';
+            }
+          } catch (err) {
+            console.error("Error loading application status:", err);
+          }
+
+          document
+            .getElementById("logout-link")
+            .addEventListener("click", (e) => {
+              e.preventDefault();
+              logout();
+            });
+
+          document
+            .getElementById("sidebar-toggle")
+            .addEventListener("click", () => {
+              document.body.classList.toggle("dash-sidebar-open");
+            });
+
+          // Coach apply form handler
+          const applyForm = document.getElementById("coach-apply-form");
+          if (applyForm) {
+            applyForm.addEventListener("submit", async (e) => {
+              e.preventDefault();
+              const formData = {
+                specialization: applyForm.specialization.value,
+                bio: applyForm.bio.value,
+                experience_years: parseInt(applyForm.experience_years.value) || 0
+              };
+
+              try {
+                const res = await fetch("/api/applications/apply", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(formData)
+                });
+                const result = await res.json();
+                
+                if (result.success) {
+                  showToast("Application submitted! Admin will review it soon.", "success");
+                  applyForm.reset();
+                  document.getElementById("coach-apply-form").style.display = "none";
+                  document.getElementById("coach-status-display").innerHTML = `
+                    <div style="background: rgba(198, 241, 53, 0.1); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 20px;">
+                      <div style="font-weight: 600; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">PENDING</div>
+                      <div style="color: var(--muted); font-size: 14px;">Your application has been submitted. Admin will review it soon.</div>
+                    </div>
+                  `;
+                } else {
+                  showToast(result.error || "Error submitting application", "error");
+                }
+              } catch (err) {
+                console.error("Error:", err);
+                showToast("Error submitting application", "error");
+              }
+            });
+          }
+        }
+
+        document.addEventListener("DOMContentLoaded", init);
+      })();
+    </script>
+  </body>
+</html>

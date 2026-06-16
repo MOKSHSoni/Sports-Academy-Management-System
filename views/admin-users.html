@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Management – APEX Admin</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      * { box-sizing: border-box; }
+      .dash-layout { display: flex; min-height: 100vh; }
+      .dash-sidebar {
+        width: 240px;
+        background: var(--panel);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        z-index: 100;
+        transition: transform 0.3s;
+      }
+      .dash-logo {
+        padding: 24px;
+        border-bottom: 1px solid var(--border);
+      }
+      .dash-logo a { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+      .dash-logo-icon {
+        width: 40px; height: 40px;
+        background: var(--lime);
+        clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+        display: flex; align-items: center; justify-content: center;
+        font-family: "Bebas Neue"; color: var(--black); font-size: 16px;
+      }
+      .dash-logo-text { font-family: "Bebas Neue"; font-size: 20px; letter-spacing: 2px; color: var(--white); }
+      .dash-logo-text span { color: var(--lime); }
+      .dash-user { padding: 24px; border-bottom: 1px solid var(--border); }
+      .dash-user-name { font-weight: 600; font-size: 15px; margin-bottom: 6px; }
+      .dash-user-role {
+        display: inline-block;
+        background: rgba(198,241,53,0.15);
+        color: var(--lime);
+        font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+        padding: 4px 10px; border-radius: 20px;
+      }
+      .dash-nav { flex: 1; padding: 16px 0; overflow-y: auto; }
+      .dash-nav a {
+        display: flex; align-items: center; gap: 12px;
+        padding: 12px 24px;
+        color: var(--muted); text-decoration: none;
+        font-size: 14px; font-weight: 500; letter-spacing: 0.5px;
+        transition: all 0.2s; border-left: 3px solid transparent;
+      }
+      .dash-nav a:hover { color: var(--white); background: rgba(255,255,255,0.03); }
+      .dash-nav a.active { color: var(--lime); background: rgba(198,241,53,0.06); border-left-color: var(--lime); }
+      .dash-nav a.logout { color: #ff6464; }
+      .dash-nav a.logout:hover { background: rgba(255,100,100,0.1); }
+      .dash-sidebar-toggle {
+        display: none;
+        position: fixed; top: 16px; left: 16px; z-index: 101;
+        width: 44px; height: 44px;
+        background: var(--panel); border: 1px solid var(--border);
+        border-radius: var(--radius); color: var(--white); font-size: 20px; cursor: pointer;
+        align-items: center; justify-content: center;
+      }
+      .dash-main { flex: 1; margin-left: 240px; background: var(--dark); min-height: 100vh; padding: 32px 48px 80px; }
+      @media (max-width: 768px) {
+        .dash-sidebar { transform: translateX(-100%); }
+        .dash-sidebar-open .dash-sidebar { transform: translateX(0); }
+        .dash-sidebar-toggle { display: flex; }
+        .dash-main { margin-left: 0; padding: 24px 20px 60px; }
+      }
+
+      /* ── Page header ──────────────────────────────────────── */
+      .page-header { margin-bottom: 32px; }
+      .page-header h1 { font-family: "Bebas Neue"; font-size: 32px; letter-spacing: 3px; }
+      .page-header h1 span { color: var(--lime); }
+      .page-header p { color: var(--muted); font-size: 14px; margin-top: 6px; }
+
+      /* ── Toolbar ──────────────────────────────────────────── */
+      .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .toolbar-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+      .search-input {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 16px;
+        color: var(--white);
+        font-family: "DM Sans"; font-size: 14px;
+        outline: none; transition: border-color 0.2s;
+        width: 260px;
+      }
+      .search-input:focus { border-color: var(--lime); }
+      .search-input::placeholder { color: var(--muted); }
+      .filter-select {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 16px;
+        color: var(--white);
+        font-family: "DM Sans"; font-size: 14px;
+        outline: none; cursor: pointer;
+      }
+      .filter-select option { background: var(--panel); }
+      .user-count {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .user-count strong { color: var(--white); }
+
+      /* ── Table ────────────────────────────────────────────── */
+      .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .admin-table th {
+        text-align: left; padding: 14px 20px;
+        font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+        color: var(--muted); background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border);
+      }
+      .admin-table td {
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+      }
+      .admin-table tr:last-child td { border-bottom: none; }
+      .admin-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+      /* ── Role badges ──────────────────────────────────────── */
+      .role-badge {
+        display: inline-flex; align-items: center;
+        font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+        padding: 4px 10px; border-radius: 20px;
+        gap: 5px;
+      }
+      .role-badge.student {
+        background: rgba(255,255,255,0.06);
+        color: var(--muted);
+        border: 1px solid var(--border);
+      }
+      .role-badge.coach {
+        background: rgba(198,241,53,0.12);
+        color: var(--lime);
+        border: 1px solid rgba(198,241,53,0.25);
+      }
+
+      /* ── Action buttons ───────────────────────────────────── */
+      .btn-promote {
+        background: var(--lime-dim);
+        color: var(--lime);
+        border: 1px solid rgba(198,241,53,0.3);
+        padding: 6px 14px; border-radius: 6px;
+        font-size: 12px; font-weight: 600; font-family: "DM Sans";
+        cursor: pointer; transition: all 0.2s;
+        white-space: nowrap;
+      }
+      .btn-promote:hover { background: rgba(198,241,53,0.2); }
+      .btn-promote:disabled { opacity: 0.5; cursor: not-allowed; }
+      .btn-demote {
+        background: rgba(255,100,100,0.08);
+        color: #ff8080;
+        border: 1px solid rgba(255,100,100,0.25);
+        padding: 6px 14px; border-radius: 6px;
+        font-size: 12px; font-weight: 600; font-family: "DM Sans";
+        cursor: pointer; transition: all 0.2s;
+        white-space: nowrap;
+      }
+      .btn-demote:hover { background: rgba(255,100,100,0.15); }
+      .btn-demote:disabled { opacity: 0.5; cursor: not-allowed; }
+      .btn-delete {
+        background: rgba(255,100,100,0.08);
+        color: #ff6464;
+        border: 1px solid rgba(255,100,100,0.25);
+        padding: 6px 14px; border-radius: 6px;
+        font-size: 12px; font-weight: 600; font-family: "DM Sans";
+        cursor: pointer; transition: all 0.2s;
+        white-space: nowrap;
+      }
+      .btn-delete:hover { background: rgba(255,100,100,0.15); }
+      .btn-delete:disabled { opacity: 0.5; cursor: not-allowed; }
+
+      /* ── Empty / loading ──────────────────────────────────── */
+      .admin-empty { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 15px; }
+      .table-loading { display: flex; align-items: center; gap: 16px; color: var(--muted); padding: 40px 20px; }
+
+      /* ── Info box ─────────────────────────────────────────── */
+      .info-box {
+        background: rgba(198,241,53,0.06);
+        border: 1px solid rgba(198,241,53,0.2);
+        border-radius: 10px;
+        padding: 16px 20px;
+        font-size: 13px;
+        color: rgba(240,242,245,0.7);
+        line-height: 1.6;
+        margin-bottom: 28px;
+        display: flex; align-items: flex-start; gap: 12px;
+      }
+      .info-box .info-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    </style>
+  </head>
+  <body>
+    <button class="dash-sidebar-toggle" id="sidebar-toggle">☰</button>
+
+    <div class="dash-layout" id="dash-layout">
+      <aside class="dash-sidebar">
+        <div class="dash-logo">
+          <a href="/">
+            <div class="dash-logo-icon">A</div>
+            <span class="dash-logo-text">APEX<span>Academy</span></span>
+          </a>
+        </div>
+        <div class="dash-user">
+          <div class="dash-user-name" id="user-name">—</div>
+          <span class="dash-user-role">Admin</span>
+        </div>
+        <nav class="dash-nav">
+          <a href="/admin">Dashboard</a>
+          <a href="/admin/programs">Programs &amp; Coaches</a>
+          <a href="/admin/students">Students &amp; Events</a>
+          <a href="/admin/users" class="active">User Roles</a>
+          <a href="/admin/applications">Coach Applications</a>
+          <a href="#" class="logout" id="logout-link">Logout</a>
+        </nav>
+      </aside>
+
+      <main class="dash-main">
+        <div class="page-header">
+          <h1>USERS</h1>
+        </div>
+
+
+
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <input type="text" class="search-input" id="user-search" placeholder="Search by name or email…">
+            <select class="filter-select" id="role-filter">
+              <option value="all">All roles</option>
+              <option value="student">Students only</option>
+              <option value="coach">Coaches only</option>
+            </select>
+          </div>
+          <div class="user-count" id="user-count"></div>
+        </div>
+
+        <div id="table-wrap">
+          <div class="table-loading"><div class="spinner"></div><p>Loading users…</p></div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+      (function () {
+        let allUsers = [];
+
+        // ── Auth guard ─────────────────────────────────────────
+        async function init() {
+          const auth = await apiCall("/api/auth/me");
+          if (!auth.authenticated || auth.user.role !== "admin") {
+            window.location.href = "/login";
+            return;
+          }
+          document.getElementById("user-name").textContent = auth.user.name;
+          await loadUsers();
+          bindSearch();
+        }
+
+        // ── Load ───────────────────────────────────────────────
+        async function loadUsers() {
+          try {
+            allUsers = await apiCall("/api/admin/users");
+            renderTable(filtered());
+          } catch (e) {
+            document.getElementById("table-wrap").innerHTML =
+              '<div class="admin-empty">Failed to load users.</div>';
+          }
+        }
+
+        // ── Filter ─────────────────────────────────────────────
+        function filtered() {
+          const q = document.getElementById("user-search").value.toLowerCase();
+          const role = document.getElementById("role-filter").value;
+          return allUsers.filter(u => {
+            const matchRole = role === "all" || u.role === role;
+            const matchQ = !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
+            return matchRole && matchQ;
+          });
+        }
+
+        function bindSearch() {
+          document.getElementById("user-search").addEventListener("input", () => renderTable(filtered()));
+          document.getElementById("role-filter").addEventListener("change", () => renderTable(filtered()));
+        }
+
+        // ── Render ─────────────────────────────────────────────
+        function renderTable(users) {
+          const wrap = document.getElementById("table-wrap");
+          document.getElementById("user-count").innerHTML =
+            `<strong>${users.length}</strong> user${users.length !== 1 ? "s" : ""}`;
+
+          if (!users.length) {
+            wrap.innerHTML = '<div class="admin-empty">No users match your filters.</div>';
+            return;
+          }
+
+          wrap.innerHTML = `
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Sport</th>
+                  <th>Role</th>
+                  <th>Joined</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${users.map(u => `
+                  <tr data-uid="${u.user_id}">
+                    <td style="color:var(--muted)">${u.user_id}</td>
+                    <td><strong>${escHtml(u.name)}</strong></td>
+                    <td style="color:var(--muted)">${escHtml(u.email)}</td>
+                    <td style="text-transform:capitalize">${(u.preferred_sport || "—").replace("_", " ")}</td>
+                    <td>
+                      <span class="role-badge ${u.role}">
+                        ${u.role === "coach" ? "🏅" : "🎓"} ${u.role}
+                      </span>
+                    </td>
+                    <td style="color:var(--muted)">${fmtDate(u.created_at)}</td>
+                    <td>
+                      <button class="btn-delete" onclick="deleteUser(${u.user_id}, '${escHtml(u.name)}')">Delete</button>
+                    </td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          `;
+        }
+
+        // ── Helpers ────────────────────────────────────────────
+        function fmtDate(ts) {
+          if (!ts) return "—";
+          return new Date(ts).toLocaleDateString("en-GB", {
+            day: "numeric", month: "short", year: "numeric",
+          });
+        }
+        function escHtml(str) {
+          return String(str || "")
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        // ── Sidebar toggle ─────────────────────────────────────
+        document.getElementById("sidebar-toggle").addEventListener("click", () => {
+          document.getElementById("dash-layout").classList.toggle("dash-sidebar-open");
+        });
+
+        // ── Delete user ────────────────────────────────────────
+        window.deleteUser = async function(userId, userName) {
+          if (!confirm(`Are you sure you want to delete ${userName}? This cannot be undone.`)) {
+            return;
+          }
+          
+          try {
+            const res = await fetch(`/api/admin/users/${userId}`, { method: "DELETE" });
+            if (!res.ok) {
+              const err = await res.json();
+              alert(err.error || "Failed to delete user");
+              return;
+            }
+            alert("User deleted successfully");
+            await loadUsers();
+            renderTable(filtered());
+          } catch (err) {
+            console.error(err);
+            alert("Error deleting user");
+          }
+        };
+
+        // ── Logout ─────────────────────────────────────────────
+        document.getElementById("logout-link").addEventListener("click", async (e) => {
+          e.preventDefault();
+          await fetch("/api/auth/logout", { method: "POST" });
+          window.location.href = "/login";
+        });
+
+        init();
+      })();
+    </script>
+  </body>
+</html>

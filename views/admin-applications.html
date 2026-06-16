@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coach Applications – Admin Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      .dash-layout {
+        display: flex;
+        min-height: 100vh;
+      }
+      .dash-sidebar {
+        width: 240px;
+        background: var(--panel);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 100;
+        transition: transform 0.3s;
+      }
+      .dash-sidebar-open .dash-sidebar {
+        transform: translateX(0);
+      }
+      .dash-logo {
+        padding: 24px;
+        border-bottom: 1px solid var(--border);
+      }
+      .dash-logo a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+      }
+      .dash-logo-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--lime);
+        clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Bebas Neue";
+        color: var(--black);
+        font-size: 16px;
+      }
+      .dash-logo-text {
+        font-family: "Bebas Neue";
+        font-size: 20px;
+        letter-spacing: 2px;
+        color: var(--white);
+      }
+      .dash-logo-text span {
+        color: var(--lime);
+      }
+      .dash-user {
+        padding: 24px;
+        border-bottom: 1px solid var(--border);
+      }
+      .dash-user-name {
+        font-weight: 600;
+        font-size: 15px;
+        margin-bottom: 6px;
+      }
+      .dash-user-role {
+        display: inline-block;
+        background: rgba(198, 241, 53, 0.15);
+        color: var(--lime);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 20px;
+      }
+      .dash-nav {
+        flex: 1;
+        padding: 16px 0;
+        overflow-y: auto;
+      }
+      .dash-nav a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 24px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+      }
+      .dash-nav a:hover {
+        color: var(--white);
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .dash-nav a.active {
+        color: var(--lime);
+        background: rgba(198, 241, 53, 0.06);
+        border-left-color: var(--lime);
+      }
+      .dash-nav a.logout {
+        color: #ff6464;
+      }
+      .dash-nav a.logout:hover {
+        background: rgba(255, 100, 100, 0.1);
+      }
+      .dash-sidebar-toggle {
+        display: none;
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 101;
+        width: 44px;
+        height: 44px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--white);
+        font-size: 20px;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+      }
+      .dash-main {
+        flex: 1;
+        margin-left: 240px;
+        background: var(--dark);
+        min-height: 100vh;
+        padding: 32px 48px 80px;
+      }
+      @media (max-width: 768px) {
+        .dash-sidebar {
+          transform: translateX(-100%);
+        }
+        .dash-sidebar-open .dash-sidebar {
+          transform: translateX(0);
+        }
+        .dash-sidebar-toggle {
+          display: flex;
+        }
+        .dash-main {
+          margin-left: 0;
+          padding: 24px 20px 60px;
+        }
+      }
+      .page-header {
+        margin-bottom: 32px;
+      }
+      .page-header h1 {
+        font-family: "Bebas Neue";
+        font-size: 32px;
+        letter-spacing: 3px;
+        margin: 0;
+      }
+      .page-header h1 span {
+        color: var(--lime);
+      }
+      .tabs {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 30px;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 16px;
+      }
+      .tabs button {
+        background: none;
+        border: none;
+        color: var(--muted);
+        padding: 0 16px;
+        cursor: pointer;
+        font-weight: 600;
+        border-bottom: 3px solid transparent;
+        transition: all 0.2s;
+      }
+      .tabs button.active {
+        color: var(--lime);
+        border-bottom-color: var(--lime);
+      }
+      .applications-list {
+        display: grid;
+        gap: 20px;
+      }
+      .app-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+      }
+      .app-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 16px;
+      }
+      .app-info h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0 0 8px 0;
+      }
+      .app-info p {
+        margin: 4px 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .app-status {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .app-status.pending {
+        background: rgba(255, 193, 7, 0.15);
+        color: #ffc107;
+      }
+      .app-status.approved {
+        background: rgba(198, 241, 53, 0.15);
+        color: var(--lime);
+      }
+      .app-status.rejected {
+        background: rgba(255, 100, 100, 0.15);
+        color: #ff6464;
+      }
+      .app-details {
+        background: rgba(0, 0, 0, 0.2);
+        padding: 16px;
+        border-radius: var(--radius);
+        margin-bottom: 16px;
+      }
+      .app-details h4 {
+        margin: 0 0 8px 0;
+        font-size: 14px;
+        color: var(--lime);
+      }
+      .app-details p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+      .app-actions {
+        display: flex;
+        gap: 12px;
+      }
+      .app-actions button {
+        padding: 10px 20px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.2s;
+      }
+      .app-actions .btn-approve {
+        background: var(--lime);
+        color: var(--black);
+        border-color: var(--lime);
+      }
+      .app-actions .btn-approve:hover {
+        opacity: 0.9;
+      }
+      .app-actions .btn-reject {
+        background: transparent;
+        color: #ff6464;
+        border-color: #ff6464;
+      }
+      .app-actions .btn-reject:hover {
+        background: rgba(255, 100, 100, 0.1);
+      }
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--muted);
+      }
+      .empty-state p {
+        font-size: 16px;
+      }
+      .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 16px 24px;
+        border-radius: var(--radius);
+        font-weight: 600;
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+      }
+      .toast.success {
+        background: var(--lime);
+        color: var(--black);
+      }
+      .toast.error {
+        background: #ff6464;
+        color: white;
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="dash-layout" class="dash-layout">
+      <button id="sidebar-toggle" class="dash-sidebar-toggle">☰</button>
+      <aside class="dash-sidebar">
+        <div class="dash-logo">
+          <a href="/">
+            <div class="dash-logo-icon">A</div>
+            <span class="dash-logo-text">APEX<span>Academy</span></span>
+          </a>
+        </div>
+        <div class="dash-user">
+          <div class="dash-user-name" id="user-name">—</div>
+          <span class="dash-user-role">Admin</span>
+        </div>
+        <nav class="dash-nav">
+          <a href="/admin">Dashboard</a>
+          <a href="/admin/programs">Programs &amp; Coaches</a>
+          <a href="/admin/students">Students &amp; Events</a>
+          <a href="/admin/users">User Roles</a>
+          <a href="/admin/applications" class="active">Coach Applications</a>
+          <a href="#" class="logout" id="logout-link">Logout</a>
+        </nav>
+      </aside>
+
+      <main class="dash-main">
+        <div class="page-header">
+          <h1>COACH <span>APPLICATIONS</span></h1>
+        </div>
+
+        <div class="tabs">
+        <button class="tab-btn active" data-status="pending">Pending</button>
+        <button class="tab-btn" data-status="approved">Approved</button>
+        <button class="tab-btn" data-status="rejected">Rejected</button>
+      </div>
+
+      <div class="applications-list" id="apps-list"></div>
+      </main>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+      let currentStatus = "pending";
+
+      // Logout handler
+      document.getElementById("logout-link").addEventListener("click", (e) => {
+        e.preventDefault();
+        fetch("/api/auth/logout", { method: "POST" })
+          .then(() => (window.location.href = "/"))
+          .catch((err) => console.error("Logout error:", err));
+      });
+
+      async function loadApplications(status) {
+        currentStatus = status;
+        const appsList = document.getElementById("apps-list");
+        appsList.innerHTML = '<p style="text-align: center; color: var(--muted);">Loading...</p>';
+
+        try {
+          const res = await fetch(`/api/applications/admin/applications?status=${status}`);
+          
+          if (!res.ok) {
+            appsList.innerHTML = `<p style="color: #ff6464;">Error: ${res.status} ${res.statusText}</p>`;
+            return;
+          }
+          
+          const apps = await res.json();
+
+          if (!Array.isArray(apps) || apps.length === 0) {
+            appsList.innerHTML = `
+              <div class="empty-state">
+                <p>No ${status} applications</p>
+              </div>
+            `;
+            return;
+          }
+
+          appsList.innerHTML = apps
+            .map(
+              (app) => `
+                <div class="app-card">
+                  <div class="app-header">
+                    <div class="app-info">
+                      <h3>${app.name || "N/A"}</h3>
+                      <p>${app.email || "N/A"}</p>
+                      ${app.phone ? `<p>Phone: ${app.phone}</p>` : ""}
+                      ${app.preferred_sport ? `<p>Preferred Sport: ${app.preferred_sport.replace(/_/g, " ").toUpperCase()}</p>` : ""}
+                      <p>Applied: ${new Date(app.applied_at).toLocaleDateString()}</p>
+                    </div>
+                    <span class="app-status ${status}">${status.toUpperCase()}</span>
+                  </div>
+
+                  <div class="app-details">
+                    <h4>SPECIALIZATION</h4>
+                    <p>${app.specialization || "N/A"}</p>
+                  </div>
+
+                  <div class="app-details">
+                    <h4>BIO</h4>
+                    <p>${app.bio || "N/A"}</p>
+                  </div>
+
+                  <div class="app-details">
+                    <h4>EXPERIENCE</h4>
+                    <p>${app.experience_years || 0} years</p>
+                  </div>
+
+                  ${
+                    app.reviewed_by_name
+                      ? `<div class="app-details">
+                    <h4>REVIEWED BY</h4>
+                    <p>${app.reviewed_by_name} on ${new Date(app.reviewed_at).toLocaleDateString()}</p>
+                  </div>`
+                      : ""
+                  }
+
+                  ${
+                    status === "pending"
+                      ? `
+                    <div class="app-actions">
+                      <button class="btn-approve" onclick="approveApp(${app.application_id})">✓ Approve</button>
+                      <button class="btn-reject" onclick="rejectApp(${app.application_id})">✗ Reject</button>
+                    </div>
+                  `
+                      : ""
+                  }
+                </div>
+              `
+            )
+            .join("");
+        } catch (err) {
+          console.error("Error loading applications:", err);
+          appsList.innerHTML = `<p style="color: #ff6464;">Error loading applications: ${err.message}</p>`;
+        }
+      }
+
+      async function approveApp(applicationId) {
+        if (!confirm("Approve this coach application?")) return;
+
+        try {
+          const res = await fetch(`/api/applications/admin/applications/${applicationId}/approve`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({})
+          });
+          const result = await res.json();
+
+          if (result.success) {
+            if (result.isNewAccount) {
+              showToast(`Application approved! New account created.\n\nSetup Link: /setup-password\n\nEmail: ${result.applicantEmail}\n\nShare the setup link with the applicant so they can set their password.`, "success");
+              // Show alert with setup details
+              alert(`New Coach Account Created!\n\nEmail: ${result.applicantEmail}\nSetup Link: ${window.location.origin}/setup-password\n\nPlease share the setup link with the applicant so they can set their password and login.`);
+            } else {
+              showToast("Application approved! Coach role has been activated.", "success");
+            }
+            loadApplications(currentStatus);
+          } else {
+            showToast(result.error || "Error approving application", "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("Error approving application", "error");
+        }
+      }
+
+      async function rejectApp(applicationId) {
+        if (!confirm("Reject this coach application?")) return;
+
+        try {
+          const res = await fetch(`/api/applications/admin/applications/${applicationId}/reject`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({})
+          });
+          const result = await res.json();
+
+          if (result.success) {
+            showToast("Application rejected.", "success");
+            loadApplications(currentStatus);
+          } else {
+            showToast(result.error || "Error rejecting application", "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("Error rejecting application", "error");
+        }
+      }
+
+      function showToast(msg, type) {
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+      }
+
+      document.querySelectorAll(".tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          loadApplications(btn.dataset.status);
+        });
+      });
+
+      loadApplications("pending");
+    </script>
+  </body>
+</html>

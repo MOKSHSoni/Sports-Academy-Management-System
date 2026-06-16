@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Schedule – APEX Movement Sports Academy</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      .schedule-hero {
+        background: var(--dark);
+        padding: 120px 48px 64px;
+        position: relative;
+        border-bottom: 1px solid var(--border);
+      }
+      .schedule-hero::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(
+          to bottom,
+          transparent,
+          var(--lime),
+          transparent
+        );
+      }
+      .schedule-hero .section-tag {
+        margin-bottom: 16px;
+      }
+      .schedule-hero h1 {
+        font-family: "Bebas Neue";
+        font-size: clamp(48px, 6vw, 72px);
+        letter-spacing: 4px;
+        line-height: 0.95;
+        margin-bottom: 16px;
+      }
+      .schedule-hero h1 span {
+        color: var(--lime);
+      }
+      .schedule-hero p {
+        color: var(--muted);
+        max-width: 560px;
+        font-size: 15px;
+        line-height: 1.7;
+      }
+
+      .schedule-section {
+        background: var(--black);
+        padding: 48px;
+        padding-bottom: 80px;
+      }
+      .schedule-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 32px;
+      }
+      .schedule-controls .filter-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .schedule-controls label {
+        font-size: 12px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .schedule-controls select {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        color: var(--white);
+        padding: 10px 16px;
+        border-radius: var(--radius);
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        min-width: 160px;
+      }
+      .schedule-controls .view-toggle {
+        display: flex;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .schedule-controls .view-toggle button {
+        background: transparent;
+        border: none;
+        color: var(--muted);
+        padding: 10px 18px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .schedule-controls .view-toggle button:hover {
+        color: var(--white);
+      }
+      .schedule-controls .view-toggle button.active {
+        background: var(--lime-dim);
+        color: var(--lime);
+      }
+      .schedule-controls .enrolled-toggle {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        padding: 10px 16px;
+        border-radius: var(--radius);
+        font-size: 13px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .schedule-controls .enrolled-toggle:hover {
+        color: var(--white);
+        border-color: var(--lime);
+      }
+      .schedule-controls .enrolled-toggle.active {
+        background: var(--lime-dim);
+        border-color: var(--lime);
+        color: var(--lime);
+      }
+
+      .enrolled-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--lime);
+        background: var(--lime-dim);
+        color: var(--lime);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+
+      .schedule-timetable-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .schedule-timetable {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(140px, 1fr));
+        gap: 16px;
+        min-width: 900px;
+      }
+      .schedule-timetable .col-header {
+        font-family: "Bebas Neue";
+        font-size: 20px;
+        letter-spacing: 2px;
+        padding: 12px 0;
+        text-align: center;
+      }
+      .schedule-timetable .day-col {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .schedule-slot {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px;
+        border-left: 4px solid var(--lime);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .schedule-slot:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      }
+      .schedule-slot[data-sport="parkour"] {
+        border-left-color: var(--lime);
+      }
+      .schedule-slot[data-sport="calisthenics"] {
+        border-left-color: #63b3ed;
+      }
+      .schedule-slot[data-sport="rock_climbing"] {
+        border-left-color: #fc814a;
+      }
+      .schedule-slot[data-sport="acrobatics"] {
+        border-left-color: #b76ef7;
+      }
+      .schedule-slot-name {
+        font-family: "Bebas Neue";
+        font-size: 16px;
+        letter-spacing: 1px;
+        margin-bottom: 6px;
+      }
+      .schedule-slot-time {
+        font-size: 12px;
+        color: var(--lime);
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .schedule-slot-meta {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .schedule-rest {
+        text-align: center;
+        padding: 24px 12px;
+        color: var(--muted);
+        font-size: 13px;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: var(--radius);
+        border: 1px dashed var(--border);
+      }
+
+      .schedule-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .schedule-list-day {
+        margin-bottom: 24px;
+      }
+      .schedule-list-day h3 {
+        font-family: "Bebas Neue";
+        font-size: 24px;
+        letter-spacing: 2px;
+        margin-bottom: 16px;
+        color: var(--muted);
+      }
+      .schedule-list-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 16px;
+      }
+      .schedule-list-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 18px;
+        border-left: 4px solid var(--lime);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .schedule-list-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      }
+      .schedule-list-card[data-sport="parkour"] {
+        border-left-color: var(--lime);
+      }
+      .schedule-list-card[data-sport="calisthenics"] {
+        border-left-color: #63b3ed;
+      }
+      .schedule-list-card[data-sport="rock_climbing"] {
+        border-left-color: #fc814a;
+      }
+      .schedule-list-card[data-sport="acrobatics"] {
+        border-left-color: #b76ef7;
+      }
+
+      .schedule-loading {
+        text-align: center;
+        padding: 80px 24px;
+        color: var(--muted);
+      }
+      .schedule-loading .spinner {
+        width: 48px;
+        height: 48px;
+        border: 3px solid var(--border);
+        border-top-color: var(--lime);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 20px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 700px) {
+        .schedule-hero,
+        .schedule-section {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/" class="nav-logo">
+        <div class="nav-logo-icon">A</div>
+        <span class="nav-logo-text">APEX<span>Academy</span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/programs">Programs</a></li>
+        <li><a href="/coaches">Coaches</a></li>
+        <li><a href="/schedule">Schedule</a></li>
+        <li><a href="/events">Events</a></li>
+        <li><a href="/forum">Forum</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="/login" class="btn-ghost btn-sm">Login</a>
+        <a href="/register" class="btn-primary btn-sm">Join Now</a>
+      </div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </nav>
+    <div class="mobile-menu">
+      <a href="/">Home</a><a href="/about">About</a
+      ><a href="/programs">Programs</a> <a href="/coaches">Coaches</a
+      ><a href="/schedule">Schedule</a> <a href="/events">Events</a
+      ><a href="/forum">Forum</a><a href="/contact">Contact</a><a href="/login">Login</a>
+    </div>
+
+    <section class="schedule-hero">
+      <div class="section-tag">Weekly Classes</div>
+      <h1>CLASS <span>SCHEDULE</span></h1>
+      <p>
+        View our weekly timetable. Filter by sport or switch to list view to see
+        all sessions at a glance.
+      </p>
+    </section>
+
+    <section class="schedule-section">
+      <div class="schedule-controls">
+        <div class="filter-wrap">
+          <label for="sport-filter">Sport</label>
+          <select id="sport-filter">
+            <option value="all">All Sports</option>
+            <option value="parkour">Parkour</option>
+            <option value="calisthenics">Calisthenics</option>
+            <option value="rock_climbing">Rock Climbing</option>
+            <option value="acrobatics">Acrobatics</option>
+          </select>
+        </div>
+        <div class="view-toggle">
+          <button type="button" class="active" data-view="timetable">
+            Timetable
+          </button>
+          <button type="button" data-view="list">List</button>
+        </div>
+        <button
+          type="button"
+          id="enrolled-only-toggle"
+          class="enrolled-toggle"
+          aria-pressed="false"
+        >
+          Enrolled Sessions Only
+        </button>
+      </div>
+
+      <div id="schedule-loading" class="schedule-loading">
+        <div class="spinner"></div>
+        <p>Loading schedule…</p>
+      </div>
+      <div
+        id="schedule-timetable-wrap"
+        class="schedule-timetable-wrap"
+        style="display: none"
+      ></div>
+      <div
+        id="schedule-list-wrap"
+        class="schedule-list"
+        style="display: none"
+      ></div>
+    </section>
+
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/" class="nav-logo" style="margin-bottom: 0">
+            <div class="nav-logo-icon">A</div>
+            <span class="nav-logo-text">APEX<span>ACADEMY</span></span>
+          </a>
+          <p>
+            A movement sports academy dedicated to developing athletes through
+            Parkour, Calisthenics, Rock Climbing and Acrobatics.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Disciplines</h4>
+          <a href="/programs?sport=parkour">Parkour</a>
+          <a href="/programs?sport=calisthenics">Calisthenics</a>
+          <a href="/programs?sport=rock_climbing">Rock Climbing</a>
+          <a href="/programs?sport=acrobatics">Acrobatics</a>
+        </div>
+        <div class="footer-col">
+          <h4>Academy</h4>
+          <a href="/about">About Us</a>
+          <a href="/coaches">Our Coaches</a>
+          <a href="/schedule">Schedule</a>
+          <a href="/events">Events</a>
+        </div>
+        <div class="footer-col">
+          <h4>Join</h4>
+          <a href="/register">Register</a>
+          <a href="/login">Login</a>
+          <a href="/#trial">Free Trial</a>
+          <a href="/apply-for-coach">Become a Coach</a>
+          <a href="/contact">Contact</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 Apex Movement Academy. All rights reserved.</p>
+        <p style="color: var(--lime); font-size: 12px; letter-spacing: 1px">
+          MOVE BEYOND LIMITS
+        </p>
+      </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+      (function () {
+        const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        let allSessions = [];
+        const enrolledProgramIds = new Set();
+        let isLoggedIn = false;
+        let filterSport = "all";
+        let viewMode = "timetable";
+        let enrolledOnly = false;
+
+        const loadingEl = document.getElementById("schedule-loading");
+        const timetableWrap = document.getElementById(
+          "schedule-timetable-wrap",
+        );
+        const listWrap = document.getElementById("schedule-list-wrap");
+        const sportFilter = document.getElementById("sport-filter");
+        const enrolledOnlyToggle = document.getElementById(
+          "enrolled-only-toggle",
+        );
+
+        function formatTime(t) {
+          if (!t) return "—";
+          const s = String(t);
+          if (s.length >= 5) return s.slice(0, 5);
+          return s;
+        }
+
+        function filteredSessions() {
+          let sessions = allSessions;
+          if (filterSport !== "all") {
+            sessions = sessions.filter(
+              (s) => (s.sport || "").toLowerCase() === filterSport,
+            );
+          }
+          if (enrolledOnly) {
+            sessions = sessions.filter((s) =>
+              enrolledProgramIds.has(Number(s.program_id)),
+            );
+          }
+          return sessions;
+        }
+
+        function sessionsByDay(sessions) {
+          const byDay = {};
+          DAYS.forEach((d) => {
+            byDay[d] = [];
+          });
+          sessions.forEach((s) => {
+            const d = s.day_of_week || "";
+            if (byDay[d]) byDay[d].push(s);
+          });
+          DAYS.forEach((d) =>
+            byDay[d].sort((a, b) =>
+              (a.start_time || "").localeCompare(b.start_time || ""),
+            ),
+          );
+          return byDay;
+        }
+
+        function renderSlot(s) {
+          const sport = (s.sport || "parkour").toLowerCase().replace(" ", "_");
+          const start = formatTime(s.start_time);
+          const end = formatTime(s.end_time);
+          const timeStr =
+            start && end ? `${start}–${end}` : start || end || "—";
+          const isEnrolled = enrolledProgramIds.has(Number(s.program_id));
+          const enrolledBadge = isEnrolled
+            ? '<div class="enrolled-badge">Enrolled</div>'
+            : "";
+          return `
+            <div class="schedule-slot reveal" data-sport="${sport}">
+              
+              <div class="schedule-slot-name">${s.program_name || "Class"}</div>
+              ${enrolledBadge}
+              <div class="schedule-slot-time">${timeStr}</div>
+              <div class="schedule-slot-meta">${s.coach_name || "—"} · ${s.location || "TBC"}</div>
+
+            </div>`;
+        }
+
+        function renderTimetable() {
+          const sessions = filteredSessions();
+          const byDay = sessionsByDay(sessions);
+
+          const grid = document.createElement("div");
+          grid.className = "schedule-timetable";
+          DAYS.forEach((d) => {
+            const h = document.createElement("div");
+            h.className = "col-header";
+            h.textContent = d;
+            grid.appendChild(h);
+          });
+          DAYS.forEach((day) => {
+            const col = document.createElement("div");
+            col.className = "day-col";
+            const list = byDay[day];
+            if (!list || list.length === 0) {
+              col.innerHTML = '<div class="schedule-rest">Rest Day</div>';
+            } else {
+              col.innerHTML = list.map(renderSlot).join("");
+            }
+            grid.appendChild(col);
+          });
+
+          timetableWrap.innerHTML = "";
+          timetableWrap.appendChild(grid);
+          if (typeof initReveal === "function") initReveal();
+        }
+
+        function renderList() {
+          const sessions = filteredSessions();
+          const byDay = sessionsByDay(sessions);
+
+          let html = "";
+          DAYS.forEach((day) => {
+            const list = byDay[day];
+            if (!list || list.length === 0) return;
+            html += `<div class="schedule-list-day"><h3>${day}</h3><div class="schedule-list-cards">`;
+            list.forEach((s) => {
+              const sport = (s.sport || "parkour")
+                .toLowerCase()
+                .replace(" ", "_");
+              const start = formatTime(s.start_time);
+              const end = formatTime(s.end_time);
+              const timeStr =
+                start && end ? `${start}–${end}` : start || end || "—";
+              const isEnrolled = enrolledProgramIds.has(Number(s.program_id));
+              const enrolledBadge = isEnrolled
+                ? '<div class="enrolled-badge">Enrolled</div>'
+                : "";
+              html += `
+                <div class="schedule-list-card reveal" data-sport="${sport}">
+                  ${enrolledBadge}
+                  <div class="schedule-slot-name">${s.program_name || "Class"}</div>
+                  <div class="schedule-slot-time">${timeStr}</div>
+                  <div class="schedule-slot-meta">${s.coach_name || "—"} · ${s.location || "TBC"}</div>
+                </div>`;
+            });
+            html += "</div></div>";
+          });
+
+          listWrap.innerHTML =
+            html ||
+            '<p style="color: var(--muted);">No sessions match your filter.</p>';
+          if (typeof initReveal === "function") initReveal();
+        }
+
+        function render() {
+          if (viewMode === "timetable") {
+            timetableWrap.style.display = "block";
+            listWrap.style.display = "none";
+            renderTimetable();
+          } else {
+            timetableWrap.style.display = "none";
+            listWrap.style.display = "block";
+            renderList();
+          }
+        }
+
+        function updateEnrolledToggleUi() {
+          enrolledOnlyToggle.classList.toggle("active", enrolledOnly);
+          enrolledOnlyToggle.setAttribute("aria-pressed", String(enrolledOnly));
+        }
+
+        async function loadEnrolledPrograms() {
+          enrolledProgramIds.clear();
+          if (!isLoggedIn) return;
+          try {
+            const data = await apiCall("/api/bookings/my");
+            (data.enrollments || []).forEach((entry) => {
+              if (entry.status === "active" && entry.program_id) {
+                enrolledProgramIds.add(Number(entry.program_id));
+              }
+            });
+          } catch (_) {}
+        }
+
+        async function load() {
+          try {
+            const [scheduleData, authData] = await Promise.all([
+              apiCall("/api/schedule"),
+              apiCall("/api/auth/me"),
+            ]);
+
+            allSessions = Array.isArray(scheduleData) ? scheduleData : [];
+            isLoggedIn = !!(
+              authData &&
+              authData.authenticated &&
+              authData.user
+            );
+            await loadEnrolledPrograms();
+
+            loadingEl.style.display = "none";
+            timetableWrap.style.display = "block";
+            listWrap.style.display = "none";
+            render();
+          } catch (err) {
+            loadingEl.style.display = "none";
+            timetableWrap.style.display = "block";
+            timetableWrap.innerHTML = `<p style="color: var(--muted);">Could not load schedule. ${err.message || ""}</p>`;
+            showToast(err.message || "Failed to load schedule", "error");
+          }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+          checkAuth();
+          sportFilter.addEventListener("change", () => {
+            filterSport = sportFilter.value;
+            render();
+          });
+          document.querySelectorAll(".view-toggle button").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              viewMode = btn.dataset.view;
+              document
+                .querySelectorAll(".view-toggle button")
+                .forEach((b) => b.classList.remove("active"));
+              btn.classList.add("active");
+              render();
+            });
+          });
+          enrolledOnlyToggle.addEventListener("click", () => {
+            if (!isLoggedIn) {
+              showToast("Login to filter enrolled sessions", "error");
+              return;
+            }
+            enrolledOnly = !enrolledOnly;
+            updateEnrolledToggleUi();
+            render();
+          });
+          updateEnrolledToggleUi();
+          load();
+        });
+      })();
+    </script>
+  </body>
+</html>

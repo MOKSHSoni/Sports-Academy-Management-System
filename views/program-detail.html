@@ -1,0 +1,773 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Program – APEX Movement Sports Academy</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      /* ── HERO ── */
+      .detail-hero {
+        background: var(--dark);
+        padding: 120px 80px 72px;
+        position: relative;
+        border-bottom: 1px solid var(--border);
+        overflow: hidden;
+      }
+      .detail-hero::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(
+          to bottom,
+          transparent,
+          var(--lime),
+          transparent
+        );
+      }
+      .detail-hero-watermark {
+        position: absolute;
+        top: 50%;
+        right: -20px;
+        transform: translateY(-50%);
+        font-family: "Bebas Neue";
+        font-size: clamp(100px, 16vw, 200px);
+        letter-spacing: 8px;
+        color: var(--white);
+        opacity: 0.03;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+      .detail-hero-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 13px;
+        text-decoration: none;
+        margin-bottom: 24px;
+        transition: color 0.2s;
+      }
+      .detail-hero-back:hover {
+        color: var(--lime);
+      }
+      .detail-hero-badges {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .detail-hero h1 {
+        font-family: "Bebas Neue";
+        font-size: clamp(40px, 6vw, 72px);
+        letter-spacing: 4px;
+        line-height: 0.95;
+        margin-bottom: 20px;
+      }
+      .detail-hero h1 span {
+        color: var(--lime);
+      }
+      .detail-hero-desc {
+        color: var(--muted);
+        max-width: 600px;
+        font-size: 15px;
+        line-height: 1.8;
+      }
+      .detail-hero-meta {
+        display: flex;
+        gap: 32px;
+        flex-wrap: wrap;
+        margin-top: 28px;
+      }
+      .detail-hero-meta-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .detail-hero-meta-label {
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .detail-hero-meta-value {
+        font-size: 15px;
+        font-weight: 600;
+      }
+
+      /* ── MAIN LAYOUT ── */
+      .detail-layout {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 40px;
+        padding: 60px 80px 80px;
+        background: var(--black);
+        align-items: start;
+      }
+
+      /* ── LEFT COLUMN ── */
+      .detail-section {
+        margin-bottom: 48px;
+      }
+      .detail-section h2 {
+        font-family: "Bebas Neue";
+        font-size: 22px;
+        letter-spacing: 2px;
+        margin-bottom: 20px;
+      }
+      .detail-section h2 span {
+        color: var(--lime);
+      }
+
+      /* SCHEDULE TABLE */
+      .schedule-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .schedule-table th {
+        text-align: left;
+        padding: 12px 20px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--muted);
+        background: rgba(0, 0, 0, 0.2);
+        border-bottom: 1px solid var(--border);
+      }
+      .schedule-table td {
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+      }
+      .schedule-table tr:last-child td {
+        border-bottom: none;
+      }
+      .schedule-table tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .schedule-day {
+        font-family: "Bebas Neue";
+        font-size: 16px;
+        letter-spacing: 1px;
+        color: var(--lime);
+      }
+
+      /* COACH CARD */
+      .coach-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 28px;
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+        transition: border-color 0.2s;
+      }
+      .coach-card:hover {
+        border-color: rgba(198, 241, 53, 0.15);
+      }
+      .coach-photo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--lime);
+        flex-shrink: 0;
+      }
+      .coach-photo-ph {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--lime-dim);
+        border: 2px solid rgba(198, 241, 53, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        flex-shrink: 0;
+      }
+      .coach-info {
+        flex: 1;
+      }
+      .coach-name {
+        font-family: "Bebas Neue";
+        font-size: 22px;
+        letter-spacing: 1px;
+        margin-bottom: 6px;
+      }
+      .coach-spec {
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 10px;
+      }
+      .coach-bio {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+      .coach-exp {
+        display: inline-block;
+        background: var(--lime-dim);
+        color: var(--lime);
+        border: 1px solid rgba(198, 241, 53, 0.2);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+        margin-bottom: 10px;
+      }
+
+      /* ── RIGHT COLUMN – ENROLL CARD ── */
+      .enroll-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 32px;
+        position: sticky;
+        top: 90px;
+      }
+      .enroll-price {
+        font-family: "Bebas Neue";
+        font-size: 48px;
+        line-height: 1;
+        color: var(--lime);
+        margin-bottom: 6px;
+      }
+      .enroll-price-label {
+        font-size: 12px;
+        color: var(--muted);
+        letter-spacing: 1px;
+        margin-bottom: 24px;
+      }
+      .enroll-divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 20px 0;
+      }
+      .enroll-info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+      }
+      .enroll-info-row:last-of-type {
+        border-bottom: none;
+      }
+      .enroll-info-label {
+        color: var(--muted);
+      }
+      .enroll-info-value {
+        font-weight: 600;
+      }
+      .enroll-spots {
+        text-align: center;
+        padding: 10px;
+        background: var(--lime-dim);
+        border-radius: 8px;
+        color: var(--lime);
+        font-size: 13px;
+        font-weight: 600;
+        margin: 20px 0;
+      }
+      .enroll-spots.full {
+        background: rgba(255, 100, 100, 0.1);
+        color: #ff6464;
+      }
+      .enroll-btn-wrap {
+        margin-top: 8px;
+      }
+      .enroll-btn-wrap .btn-primary {
+        width: 100%;
+        justify-content: center;
+        font-size: 16px;
+        padding: 16px;
+      }
+      .enroll-login-note {
+        text-align: center;
+        margin-top: 12px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .enroll-login-note a {
+        color: var(--lime);
+        text-decoration: none;
+      }
+
+      /* ── LOADING / ERROR ── */
+      .detail-loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 16px;
+        padding: 120px 0;
+        color: var(--muted);
+      }
+      .detail-error {
+        text-align: center;
+        padding: 120px 48px;
+        color: var(--muted);
+      }
+      .detail-error h2 {
+        font-family: "Bebas Neue";
+        font-size: 40px;
+        color: var(--white);
+        margin-bottom: 12px;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 1024px) {
+        .detail-hero {
+          padding: 120px 48px 64px;
+        }
+        .detail-layout {
+          grid-template-columns: 1fr;
+          padding: 48px;
+        }
+        .enroll-card {
+          position: static;
+        }
+      }
+      @media (max-width: 768px) {
+        .detail-hero {
+          padding: 120px 24px 48px;
+        }
+        .detail-layout {
+          padding: 32px 24px;
+        }
+        .coach-card {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/" class="nav-logo">
+        <div class="nav-logo-icon">A</div>
+        <span class="nav-logo-text">APEX<span>Academy</span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/programs" class="active">Programs</a></li>
+        <li><a href="/coaches">Coaches</a></li>
+        <li><a href="/schedule">Schedule</a></li>
+        <li><a href="/events">Events</a></li>
+        <li><a href="/forum">Forum</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions" id="nav-actions">
+        <a href="/login" class="btn-ghost btn-sm">Login</a>
+        <a href="/register" class="btn-primary btn-sm">Join Now</a>
+      </div>
+      <button class="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+    <div class="mobile-menu">
+      <a href="/">Home</a><a href="/about">About</a
+      ><a href="/programs">Programs</a> <a href="/coaches">Coaches</a
+      ><a href="/schedule">Schedule</a> <a href="/events">Events</a
+      ><a href="/forum">Forum</a><a href="/contact">Contact</a><a href="/login">Login</a>
+    </div>
+
+    <!-- LOADING STATE -->
+    <div id="state-loading" class="detail-loading">
+      <div class="spinner"></div>
+      <p>Loading program…</p>
+    </div>
+
+    <!-- ERROR STATE -->
+    <div id="state-error" class="detail-error" style="display: none">
+      <h2>Program Not Found</h2>
+      <p>This program doesn't exist or may have been removed.</p>
+      <a
+        href="/programs"
+        class="btn-primary"
+        style="display: inline-flex; margin-top: 24px"
+        >← Back to Programs</a
+      >
+    </div>
+
+    <!-- CONTENT (hidden until loaded) -->
+    <div id="state-content" style="display: none">
+      <!-- HERO -->
+      <section class="detail-hero">
+        <div class="detail-hero-watermark" id="hero-watermark">PROGRAM</div>
+        <a href="/programs" class="detail-hero-back">← Back to Programs</a>
+        <div class="detail-hero-badges" id="hero-badges"></div>
+        <h1 id="hero-title">—</h1>
+        <p class="detail-hero-desc" id="hero-desc"></p>
+        <div class="detail-hero-meta" id="hero-meta"></div>
+      </section>
+
+      <!-- MAIN LAYOUT -->
+      <div class="detail-layout">
+        <!-- LEFT -->
+        <div>
+          <!-- DESCRIPTION -->
+          <div class="detail-section" id="section-about">
+            <h2>ABOUT THIS <span>PROGRAM</span></h2>
+            <p
+              id="about-text"
+              style="color: var(--muted); line-height: 1.8; font-size: 15px"
+            ></p>
+          </div>
+
+          <!-- SCHEDULE -->
+          <div class="detail-section" id="section-schedule">
+            <h2>WEEKLY <span>SCHEDULE</span></h2>
+            <div id="schedule-wrap"></div>
+          </div>
+
+          <!-- COACH -->
+          <div class="detail-section" id="section-coach" style="display: none">
+            <h2>YOUR <span>COACH</span></h2>
+            <div id="coach-wrap"></div>
+          </div>
+        </div>
+
+        <!-- RIGHT – ENROLL CARD -->
+        <div>
+          <div class="enroll-card">
+            <div class="enroll-price" id="enroll-price">—</div>
+            <div class="enroll-price-label">Per Month</div>
+            <hr class="enroll-divider" />
+            <div class="enroll-info-row">
+              <span class="enroll-info-label">Skill Level</span>
+              <span class="enroll-info-value" id="ei-level">—</span>
+            </div>
+            <div class="enroll-info-row">
+              <span class="enroll-info-label">Age Group</span>
+              <span class="enroll-info-value" id="ei-age">—</span>
+            </div>
+            <div class="enroll-info-row">
+              <span class="enroll-info-label">Coach</span>
+              <span class="enroll-info-value" id="ei-coach">—</span>
+            </div>
+            <div class="enroll-info-row">
+              <span class="enroll-info-label">Max Capacity</span>
+              <span class="enroll-info-value" id="ei-capacity">—</span>
+            </div>
+            <div class="enroll-spots" id="enroll-spots">— spots left</div>
+            <div class="enroll-btn-wrap" id="enroll-btn-wrap"></div>
+            <p
+              class="enroll-login-note"
+              id="enroll-login-note"
+              style="display: none"
+            >
+              <a href="/login">Log in</a> or <a href="/register">register</a> to
+              enroll.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer id="page-footer" style="display: none">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/" class="nav-logo" style="margin-bottom: 0">
+            <div class="nav-logo-icon">A</div>
+            <span class="nav-logo-text">ATHLE<span>TICA</span></span>
+          </a>
+          <p>
+            A movement sports academy dedicated to developing athletes through
+            Parkour, Calisthenics, Rock Climbing and Acrobatics.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Disciplines</h4>
+          <a href="/programs?sport=parkour">Parkour</a>
+          <a href="/programs?sport=calisthenics">Calisthenics</a>
+          <a href="/programs?sport=rock_climbing">Rock Climbing</a>
+          <a href="/programs?sport=acrobatics">Acrobatics</a>
+        </div>
+        <div class="footer-col">
+          <h4>Academy</h4>
+          <a href="/about">About Us</a>
+          <a href="/coaches">Our Coaches</a>
+          <a href="/schedule">Schedule</a>
+          <a href="/events">Events</a>
+        </div>
+        <div class="footer-col">
+          <h4>Join</h4>
+          <a href="/register">Register</a>
+          <a href="/login">Login</a>
+          <a href="/#trial">Free Trial</a>
+          <a href="/apply-for-coach">Become a Coach</a>
+          <a href="/contact">Contact</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 Athletica Movement Academy. All rights reserved.</p>
+        <p style="color: var(--lime); font-size: 12px; letter-spacing: 1px">
+          MOVE BEYOND LIMITS
+        </p>
+      </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+      (function () {
+        /* ── GET PROGRAM ID FROM URL ── */
+        function getProgramId() {
+          const parts = window.location.pathname.split("/");
+          // /programs/42  →  parts = ["", "programs", "42"]
+          const id = parseInt(parts[parts.length - 1], 10);
+          return isNaN(id) ? null : id;
+        }
+
+        function fmtTime(t) {
+          return t ? String(t).slice(0, 5) : "—";
+        }
+
+        function capitalize(s) {
+          if (!s) return "—";
+          return s.charAt(0).toUpperCase() + s.slice(1).replace(/_/g, " ");
+        }
+
+        /* ── RENDER PROGRAM ── */
+        function render(p, enrolledIds) {
+          const spots = Math.max(
+            0,
+            (p.max_capacity || 0) - (p.current_enrolled || 0),
+          );
+          const isFull = spots === 0;
+          const isEnrolled = enrolledIds.has(p.program_id);
+
+          /* Title & document title */
+          document.title = p.name + " – Athletica Movement Sports Academy";
+          document.getElementById("hero-title").textContent = p.name;
+          document.getElementById("hero-watermark").textContent = (
+            p.sport || "PROGRAM"
+          )
+            .toUpperCase()
+            .replace("_", " ");
+
+          /* Badges */
+          const badgesEl = document.getElementById("hero-badges");
+          badgesEl.innerHTML =
+            sportBadge(p.sport || "") +
+            "&nbsp;" +
+            levelBadge(p.skill_level || "");
+
+          /* Description */
+          const desc =
+            p.description ||
+            "A comprehensive movement training program designed to develop strength, skill and confidence.";
+          document.getElementById("hero-desc").textContent = desc;
+          document.getElementById("about-text").textContent = desc;
+
+          /* Hero meta row */
+          document.getElementById("hero-meta").innerHTML = `
+          <div class="detail-hero-meta-item">
+            <span class="detail-hero-meta-label">Age Group</span>
+            <span class="detail-hero-meta-value">${capitalize(p.age_group)}</span>
+          </div>
+          <div class="detail-hero-meta-item">
+            <span class="detail-hero-meta-label">Level</span>
+            <span class="detail-hero-meta-value">${capitalize(p.skill_level)}</span>
+          </div>
+          <div class="detail-hero-meta-item">
+            <span class="detail-hero-meta-label">Monthly Fee</span>
+            <span class="detail-hero-meta-value" style="color:var(--lime)">₹ ${Number(p.fees).toLocaleString()}</span>
+          </div>
+          <div class="detail-hero-meta-item">
+            <span class="detail-hero-meta-label">Enrolled</span>
+            <span class="detail-hero-meta-value">${p.current_enrolled} / ${p.max_capacity}</span>
+          </div>`;
+
+          /* Enroll card */
+          document.getElementById("enroll-price").textContent =
+            "₹ " + Number(p.fees).toLocaleString();
+          document.getElementById("ei-level").textContent = capitalize(
+            p.skill_level,
+          );
+          document.getElementById("ei-age").textContent = capitalize(
+            p.age_group,
+          );
+          document.getElementById("ei-coach").textContent =
+            p.coach_name || "TBC";
+          document.getElementById("ei-capacity").textContent =
+            p.max_capacity + " students";
+
+          const spotsEl = document.getElementById("enroll-spots");
+          if (isFull) {
+            spotsEl.textContent = "Program Full";
+            spotsEl.classList.add("full");
+          } else {
+            spotsEl.textContent =
+              spots + " spot" + (spots === 1 ? "" : "s") + " available";
+          }
+
+          /* Enroll button */
+          const btnWrap = document.getElementById("enroll-btn-wrap");
+          const loginNote = document.getElementById("enroll-login-note");
+
+          if (currentUser) {
+            loginNote.style.display = "none";
+            if (isEnrolled) {
+              btnWrap.innerHTML =
+                '<button class="btn-primary" style="width:100%;justify-content:center;font-size:16px;padding:16px;opacity:0.7;" disabled>Already Enrolled ✓</button>';
+            } else if (isFull) {
+              btnWrap.innerHTML =
+                '<button class="btn-ghost" style="width:100%;justify-content:center;font-size:16px;padding:16px;" disabled>Program Full</button>';
+            } else {
+              btnWrap.innerHTML =
+                '<button class="btn-primary" id="enroll-btn" style="width:100%;justify-content:center;font-size:16px;padding:16px;">Enroll Now →</button>';
+              document
+                .getElementById("enroll-btn")
+                .addEventListener("click", async () => {
+                  const btn = document.getElementById("enroll-btn");
+                  btn.disabled = true;
+                  btn.textContent = "Enrolling…";
+                  try {
+                    await apiCall("/api/programs/enroll", "POST", {
+                      program_id: p.program_id,
+                    });
+                    showToast("Enrolled successfully! 🎉", "success");
+                    btn.textContent = "Enrolled ✓";
+                    spotsEl.textContent =
+                      spots -
+                      1 +
+                      " spot" +
+                      (spots - 1 === 1 ? "" : "s") +
+                      " available";
+                  } catch (err) {
+                    showToast(err.message || "Enrollment failed", "error");
+                    btn.disabled = false;
+                    btn.textContent = "Enroll Now →";
+                  }
+                });
+            }
+          } else {
+            btnWrap.innerHTML =
+              '<a href="/login" class="btn-primary" style="width:100%;justify-content:center;font-size:16px;padding:16px;text-decoration:none;">Login to Enroll →</a>';
+            loginNote.style.display = "block";
+          }
+
+          /* Schedule */
+          const schedWrap = document.getElementById("schedule-wrap");
+          const schedule = p.schedule || [];
+          if (schedule.length === 0) {
+            schedWrap.innerHTML =
+              '<p style="color:var(--muted);">Schedule to be announced. <a href="/contact" style="color:var(--lime);">Contact us</a> for details.</p>';
+          } else {
+            schedWrap.innerHTML = `
+            <table class="schedule-table">
+              <thead><tr>
+                <th>Day</th><th>Start</th><th>End</th><th>Location</th>
+              </tr></thead>
+              <tbody>${schedule
+                .map(
+                  (s) => `
+                <tr>
+                  <td><span class="schedule-day">${s.day_of_week}</span></td>
+                  <td>${fmtTime(s.start_time)}</td>
+                  <td>${fmtTime(s.end_time)}</td>
+                  <td style="color:var(--muted);font-size:13px">📍 ${s.location || "TBC"}</td>
+                </tr>`,
+                )
+                .join("")}
+              </tbody>
+            </table>`;
+          }
+
+          /* Coach */
+          if (p.coach_name) {
+            document.getElementById("section-coach").style.display = "block";
+            const coachWrap = document.getElementById("coach-wrap");
+            coachWrap.innerHTML = `
+            <div class="coach-card">
+              ${
+                p.coach_photo
+                  ? `<img src="${p.coach_photo}" alt="${p.coach_name}" class="coach-photo" onerror="this.outerHTML='<div class=coach-photo-ph>🧑‍🏫</div>'">`
+                  : `<div class="coach-photo-ph">🧑‍🏫</div>`
+              }
+              <div class="coach-info">
+                <div class="coach-name">${p.coach_name}</div>
+                ${p.experience_years ? `<div class="coach-exp">${p.experience_years} yrs experience</div>` : ""}
+                ${p.specialization ? `<div class="coach-spec">${p.specialization}</div>` : ""}
+                ${p.coach_bio ? `<div class="coach-bio">${p.coach_bio}</div>` : ""}
+                <a href="/coaches" style="display:inline-block;margin-top:14px;color:var(--lime);font-size:13px;font-weight:600;text-decoration:none;">View all coaches →</a>
+              </div>
+            </div>`;
+          }
+
+          /* Show content */
+          document.getElementById("state-loading").style.display = "none";
+          document.getElementById("state-content").style.display = "block";
+          document.getElementById("page-footer").style.display = "block";
+
+          if (typeof initReveal === "function") initReveal();
+        }
+
+        /* ── INIT ── */
+        async function init() {
+          const id = getProgramId();
+          if (!id) {
+            document.getElementById("state-loading").style.display = "none";
+            document.getElementById("state-error").style.display = "block";
+            return;
+          }
+
+          /* Check auth (non-blocking) */
+          try {
+            const res = await fetch("/api/auth/me");
+            const auth = await res.json();
+            if (auth.authenticated && auth.user) currentUser = auth.user;
+          } catch (_) {
+            /* ignore */
+          }
+
+          /* Fetch program + enrolled programs in parallel */
+          let program,
+            enrolledIds = new Set();
+          try {
+            const [prog, bookings] = await Promise.allSettled([
+              apiCall(`/api/programs/${id}`),
+              currentUser ? apiCall("/api/bookings/my") : Promise.resolve(null),
+            ]);
+
+            if (prog.status === "rejected" || !prog.value) {
+              document.getElementById("state-loading").style.display = "none";
+              document.getElementById("state-error").style.display = "block";
+              return;
+            }
+            program = prog.value;
+
+            if (bookings.status === "fulfilled" && bookings.value) {
+              const enrs = bookings.value.enrollments || [];
+              enrs
+                .filter((e) => e.status === "active")
+                .forEach((e) => enrolledIds.add(e.program_id));
+            }
+          } catch (err) {
+            document.getElementById("state-loading").style.display = "none";
+            document.getElementById("state-error").style.display = "block";
+            return;
+          }
+
+          render(program, enrolledIds);
+        }
+
+        document.addEventListener("DOMContentLoaded", init);
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coaches – APEX Movement Sports Academy</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      /* Coaches page */
+      .coaches-hero {
+        background: var(--dark);
+        padding: 120px 48px 64px;
+        position: relative;
+        border-bottom: 1px solid var(--border);
+      }
+      .coaches-hero::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(
+          to bottom,
+          transparent,
+          var(--lime),
+          transparent
+        );
+      }
+      .coaches-hero .section-tag {
+        margin-bottom: 16px;
+      }
+      .coaches-hero h1 {
+        font-family: "Bebas Neue";
+        font-size: clamp(48px, 6vw, 72px);
+        letter-spacing: 4px;
+        line-height: 0.95;
+        margin-bottom: 16px;
+      }
+      .coaches-hero h1 span {
+        color: var(--lime);
+      }
+      .coaches-hero p {
+        color: var(--muted);
+        max-width: 560px;
+        font-size: 15px;
+        line-height: 1.7;
+      }
+
+      .coaches-section {
+        background: var(--black);
+        padding: 48px 48px 80px;
+        position: relative;
+        overflow: hidden;
+      }
+      .coaches-watermark {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: "Bebas Neue";
+        font-size: clamp(120px, 20vw, 280px);
+        letter-spacing: 8px;
+        color: var(--white);
+        opacity: 0.03;
+        white-space: nowrap;
+        pointer-events: none;
+      }
+
+      .coaches-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 32px;
+        position: relative;
+        z-index: 1;
+      }
+      .coach-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        transition:
+          transform 0.3s,
+          border-color 0.3s,
+          box-shadow 0.3s;
+      }
+      .coach-card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(198, 241, 53, 0.25);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      }
+      .coach-card-accent {
+        height: 4px;
+      }
+      .coach-card-accent[data-sport="parkour"] {
+        background: var(--lime);
+      }
+      .coach-card-accent[data-sport="calisthenics"] {
+        background: #63b3ed;
+      }
+      .coach-card-accent[data-sport="rock_climbing"] {
+        background: #fc814a;
+      }
+      .coach-card-accent[data-sport="acrobatics"] {
+        background: #b76ef7;
+      }
+      .coach-card-body {
+        padding: 28px;
+      }
+      .coach-card-top {
+        display: flex;
+        align-items: flex-start;
+        gap: 24px;
+        margin-bottom: 20px;
+      }
+      .coach-card-photo {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+        border: 2px solid var(--border);
+      }
+      .coach-card-info {
+        flex: 1;
+      }
+      .coach-card-name {
+        font-family: "Bebas Neue";
+        font-size: 28px;
+        letter-spacing: 2px;
+        margin-bottom: 6px;
+      }
+      .coach-card-specialization {
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+      .coach-card-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+      .coach-card-experience {
+        font-size: 12px;
+        color: var(--lime);
+        font-weight: 600;
+        letter-spacing: 1px;
+      }
+      .coach-card-bio {
+        font-size: 14px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+      .coach-card-bio.truncated {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .coach-card-bio-toggle {
+        background: none;
+        border: none;
+        color: var(--lime);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        cursor: pointer;
+        padding: 4px 0;
+        margin-top: 8px;
+      }
+      .coach-card-bio-toggle:hover {
+        text-decoration: underline;
+      }
+
+      .coaches-loading {
+        text-align: center;
+        padding: 80px 24px;
+        color: var(--muted);
+      }
+      .coaches-loading .spinner {
+        width: 48px;
+        height: 48px;
+        border: 3px solid var(--border);
+        border-top-color: var(--lime);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 20px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 900px) {
+        .coaches-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 700px) {
+        .coaches-hero,
+        .coaches-section {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
+        .coach-card-top {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+        .coach-card-meta {
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/" class="nav-logo">
+        <div class="nav-logo-icon">A</div>
+        <span class="nav-logo-text">APEX<span>Academy</span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/programs">Programs</a></li>
+        <li><a href="/coaches">Coaches</a></li>
+        <li><a href="/schedule">Schedule</a></li>
+        <li><a href="/events">Events</a></li>
+        <li><a href="/forum">Forum</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="/login" class="btn-ghost btn-sm">Login</a>
+        <a href="/register" class="btn-primary btn-sm">Join Now</a>
+      </div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </nav>
+    <div class="mobile-menu">
+      <a href="/">Home</a><a href="/about">About</a
+      ><a href="/programs">Programs</a> <a href="/coaches">Coaches</a
+      ><a href="/schedule">Schedule</a> <a href="/events">Events</a
+      ><a href="/forum">Forum</a><a href="/contact">Contact</a><a href="/login">Login</a>
+    </div>
+
+    <section class="coaches-hero">
+      <div class="section-tag">Our Team</div>
+      <h1>MEET THE <span>COACHES</span></h1>
+      <p>
+        Our coaches bring years of expertise from Parkour, Calisthenics, Rock
+        Climbing and Acrobatics. They believe in progressive training,
+        safety-first movement, and building athletes from the inside out.
+      </p>
+      <a href="/apply-for-coach" class="btn-primary" style="margin-top: 24px; display: inline-block;">Apply to Join Our Team →</a>
+    </section>
+
+    <section class="coaches-section">
+      <div class="coaches-watermark">COACHES</div>
+
+      <div id="coaches-loading" class="coaches-loading">
+        <div class="spinner"></div>
+        <p>Loading coaches…</p>
+      </div>
+      <div id="coaches-grid" class="coaches-grid" style="display: none"></div>
+    </section>
+
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/" class="nav-logo" style="margin-bottom: 0">
+            <div class="nav-logo-icon">A</div>
+            <span class="nav-logo-text">APEX<span>ACADEMY</span></span>
+          </a>
+          <p>
+            A movement sports academy dedicated to developing athletes through
+            Parkour, Calisthenics, Rock Climbing and Acrobatics.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Disciplines</h4>
+          <a href="/programs?sport=parkour">Parkour</a>
+          <a href="/programs?sport=calisthenics">Calisthenics</a>
+          <a href="/programs?sport=rock_climbing">Rock Climbing</a>
+          <a href="/programs?sport=acrobatics">Acrobatics</a>
+        </div>
+        <div class="footer-col">
+          <h4>Academy</h4>
+          <a href="/about">About Us</a>
+          <a href="/coaches">Our Coaches</a>
+          <a href="/schedule">Schedule</a>
+          <a href="/events">Events</a>
+        </div>
+        <div class="footer-col">
+          <h4>Join</h4>
+          <a href="/register">Register</a>
+          <a href="/login">Login</a>
+          <a href="/#trial">Free Trial</a>
+          <a href="/apply-for-coach">Become a Coach</a>
+          <a href="/contact">Contact</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 APEX Movement Sports Academy. All rights reserved.</p>
+        <p style="color: var(--lime); font-size: 12px; letter-spacing: 1px">
+          MOVE BEYOND LIMITS
+        </p>
+      </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+      (function () {
+        const gridEl = document.getElementById("coaches-grid");
+        const loadingEl = document.getElementById("coaches-loading");
+
+        function sportAccentColor(sport) {
+          const s = (sport || "").toLowerCase();
+          if (s === "parkour") return "var(--lime)";
+          if (s === "calisthenics") return "#63b3ed";
+          if (s === "rock_climbing") return "#fc814a";
+          if (s === "acrobatics") return "#b76ef7";
+          return "var(--border)";
+        }
+
+        function renderCoaches(coaches) {
+          loadingEl.style.display = "none";
+          gridEl.style.display = "grid";
+
+          gridEl.innerHTML = coaches
+            .map((c) => {
+              const sport = c.sport || "parkour";
+              const photoUrl =
+                c.photo_url ||
+                "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=240";
+              const experienceText =
+                c.experience_years != null
+                  ? `${c.experience_years} Years Experience`
+                  : "";
+              const bioText = c.bio || "";
+              const needsExpand = bioText.length > 150;
+              const sportBadgeHtml =
+                typeof sportBadge === "function" ? sportBadge(sport) : "";
+
+              return `
+                <div class="coach-card reveal">
+                  <div class="coach-card-accent" data-sport="${sport}"></div>
+                  <div class="coach-card-body">
+                    <div class="coach-card-top">
+                      <img
+                        src="${photoUrl}"
+                        alt="${c.name || "Coach"}"
+                        class="coach-card-photo"
+                      />
+                      <div class="coach-card-info">
+                        <div class="coach-card-name">${c.name || "Coach"}</div>
+                        <div class="coach-card-specialization">${c.specialization || ""}</div>
+                        <div class="coach-card-meta">
+                          ${sportBadgeHtml}
+                          ${experienceText ? `<span class="coach-card-experience">${experienceText}</span>` : ""}
+                        </div>
+                      </div>
+                    </div>
+                    ${
+                      bioText
+                        ? `
+                      <div class="coach-card-bio truncated" data-full="${bioText.replace(/"/g, "&quot;")}">${bioText}</div>
+                      ${needsExpand ? '<button type="button" class="coach-card-bio-toggle">Read more</button>' : ""}
+                    `
+                        : ""
+                    }
+                  </div>
+                </div>`;
+            })
+            .join("");
+
+          gridEl.querySelectorAll(".coach-card-bio-toggle").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              const bio = btn.previousElementSibling;
+              if (bio.classList.contains("truncated")) {
+                bio.classList.remove("truncated");
+                btn.textContent = "Read less";
+              } else {
+                bio.classList.add("truncated");
+                btn.textContent = "Read more";
+              }
+            });
+          });
+
+          if (typeof initReveal === "function") initReveal();
+        }
+
+        async function load() {
+          try {
+            const res = await fetch("/api/coaches");
+            const data = await res.json();
+            if (!res.ok)
+              throw new Error(data.error || "Failed to load coaches");
+            const coaches = Array.isArray(data) ? data : [];
+            renderCoaches(coaches);
+          } catch (err) {
+            loadingEl.style.display = "none";
+            gridEl.style.display = "grid";
+            gridEl.innerHTML = `<p style="color: var(--muted); text-align: center; padding: 40px;">Could not load coaches. ${err.message || ""}</p>`;
+          }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+          checkAuth();
+          load();
+        });
+      })();
+    </script>
+  </body>
+</html>

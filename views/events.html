@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Events – APEX Movement Sports Academy</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      .events-hero {
+        background: var(--dark);
+        padding: 120px 48px 64px;
+        position: relative;
+        border-bottom: 1px solid var(--border);
+      }
+      .events-hero::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(
+          to bottom,
+          transparent,
+          var(--lime),
+          transparent
+        );
+      }
+      .events-hero .section-tag {
+        margin-bottom: 16px;
+      }
+      .events-hero h1 {
+        font-family: "Bebas Neue";
+        font-size: clamp(48px, 6vw, 72px);
+        letter-spacing: 4px;
+        line-height: 0.95;
+        margin-bottom: 16px;
+      }
+      .events-hero h1 span {
+        color: var(--lime);
+      }
+      .events-hero p {
+        color: var(--muted);
+        max-width: 560px;
+        font-size: 15px;
+        line-height: 1.7;
+      }
+
+      .events-section {
+        background: var(--black);
+        padding: 48px 48px 80px;
+      }
+      .events-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 40px;
+      }
+      .events-filters .filter-btn {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        color: var(--white);
+        padding: 10px 18px;
+        border-radius: var(--radius);
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.25s;
+      }
+      .events-filters .filter-btn:hover {
+        border-color: var(--lime);
+        color: var(--lime);
+      }
+      .events-filters .filter-btn.active {
+        background: var(--lime-dim);
+        border-color: var(--lime);
+        color: var(--lime);
+      }
+      .badge-general {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--muted);
+        border: 1px solid var(--border);
+      }
+
+      .events-block {
+        margin-bottom: 56px;
+      }
+      .events-block:last-child {
+        margin-bottom: 0;
+      }
+      .events-block h2 {
+        font-family: "Bebas Neue";
+        font-size: 28px;
+        letter-spacing: 2px;
+        margin-bottom: 24px;
+        color: var(--muted);
+      }
+      .events-block h2 span {
+        color: var(--white);
+      }
+      .events-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+      .event-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        transition:
+          transform 0.3s,
+          box-shadow 0.3s;
+      }
+      .event-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4);
+      }
+      .event-card-img {
+        position: relative;
+        height: 160px;
+        overflow: hidden;
+        background: var(--panel);
+      }
+      .event-card-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s;
+      }
+      .event-card:hover .event-card-img img {
+        transform: scale(1.05);
+      }
+      .event-date-badge {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        background: var(--lime);
+        color: var(--black);
+        border-radius: 8px;
+        padding: 10px 14px;
+        text-align: center;
+        font-family: "Bebas Neue";
+        line-height: 1;
+      }
+      .event-date-badge .day {
+        font-size: 28px;
+      }
+      .event-date-badge .month {
+        font-size: 12px;
+        letter-spacing: 2px;
+      }
+      .event-card-body {
+        padding: 24px;
+      }
+      .event-card-header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .event-card-title {
+        font-family: "Bebas Neue";
+        font-size: 22px;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+        line-height: 1.1;
+      }
+      .event-card-desc {
+        font-size: 14px;
+        color: var(--muted);
+        line-height: 1.6;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 16px;
+      }
+      .event-card-meta {
+        font-size: 13px;
+        color: var(--muted);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .event-card-fee {
+        font-weight: 600;
+        color: var(--lime);
+        font-size: 14px;
+        margin-bottom: 16px;
+      }
+      .event-card-actions {
+        display: flex;
+        align-items: center;
+      }
+      .event-card-actions .btn-register {
+        background: var(--lime);
+        color: var(--black);
+        border: none;
+        padding: 10px 20px;
+        border-radius: var(--radius);
+        font-family: "DM Sans", sans-serif;
+        font-weight: 600;
+        font-size: 13px;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+      .event-card-actions .btn-register:hover {
+        opacity: 0.9;
+      }
+      .event-card-actions .btn-register:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .badge-registered {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(72, 199, 142, 0.2);
+        color: #48c78e;
+        padding: 8px 14px;
+        border-radius: var(--radius);
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .events-loading {
+        text-align: center;
+        padding: 80px 24px;
+        color: var(--muted);
+      }
+      .events-loading .spinner {
+        width: 48px;
+        height: 48px;
+        border: 3px solid var(--border);
+        border-top-color: var(--lime);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 20px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .events-empty {
+        text-align: center;
+        padding: 80px 24px;
+        color: var(--muted);
+      }
+
+      @media (max-width: 1100px) {
+        .events-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 700px) {
+        .events-hero,
+        .events-section {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
+        .events-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/" class="nav-logo">
+        <div class="nav-logo-icon">A</div>
+        <span class="nav-logo-text">APEX<span>Academy</span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/programs">Programs</a></li>
+        <li><a href="/coaches">Coaches</a></li>
+        <li><a href="/schedule">Schedule</a></li>
+        <li><a href="/events">Events</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="/login" class="btn-ghost btn-sm">Login</a>
+        <a href="/register" class="btn-primary btn-sm">Join Now</a>
+      </div>
+      <button class="hamburger"><span></span><span></span><span></span></button>
+    </nav>
+    <div class="mobile-menu">
+      <a href="/">Home</a><a href="/about">About</a
+      ><a href="/programs">Programs</a> <a href="/coaches">Coaches</a
+      ><a href="/schedule">Schedule</a> <a href="/events">Events</a
+      ><a href="/forum">Forum</a><a href="/contact">Contact</a><a href="/login">Login</a>
+    </div>
+
+    <section class="events-hero">
+      <div class="section-tag">Workshops & Jams</div>
+      <h1>EVENTS &amp; <span>WORKSHOPS</span></h1>
+      <p>
+        Join workshops, jams and special events across Parkour, Calisthenics,
+        Rock Climbing and Acrobatics.
+      </p>
+    </section>
+
+    <section class="events-section">
+      <div class="events-filters">
+        <button type="button" class="filter-btn active" data-sport="all">
+          All
+        </button>
+        <button type="button" class="filter-btn" data-sport="parkour">
+          Parkour
+        </button>
+        <button type="button" class="filter-btn" data-sport="calisthenics">
+          Calisthenics
+        </button>
+        <button type="button" class="filter-btn" data-sport="rock_climbing">
+          Rock Climbing
+        </button>
+        <button type="button" class="filter-btn" data-sport="acrobatics">
+          Acrobatics
+        </button>
+        <button type="button" class="filter-btn" data-sport="general">
+          General / Free
+        </button>
+      </div>
+
+      <div id="events-loading" class="events-loading">
+        <div class="spinner"></div>
+        <p>Loading events…</p>
+      </div>
+      <div id="events-content" style="display: none"></div>
+      <div id="events-empty" class="events-empty" style="display: none">
+        <p>No events found.</p>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/" class="nav-logo" style="margin-bottom: 0">
+            <div class="nav-logo-icon">A</div>
+            <span class="nav-logo-text">APEX<span>ACADEMY</span></span>
+          </a>
+          <p>
+            A movement sports academy dedicated to developing athletes through
+            Parkour, Calisthenics, Rock Climbing and Acrobatics.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Disciplines</h4>
+          <a href="/programs?sport=parkour">Parkour</a>
+          <a href="/programs?sport=calisthenics">Calisthenics</a>
+          <a href="/programs?sport=rock_climbing">Rock Climbing</a>
+          <a href="/programs?sport=acrobatics">Acrobatics</a>
+        </div>
+        <div class="footer-col">
+          <h4>Academy</h4>
+          <a href="/about">About Us</a>
+          <a href="/coaches">Our Coaches</a>
+          <a href="/schedule">Schedule</a>
+          <a href="/events">Events</a>
+        </div>
+        <div class="footer-col">
+          <h4>Join</h4>
+          <a href="/register">Register</a>
+          <a href="/login">Login</a>
+          <a href="#trial">Free Trial</a>
+          <a href="/apply-for-coach">Become a Coach</a>
+          <a href="/contact">Contact</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 Apex Movement Academy. All rights reserved.</p>
+        <p style="color: var(--lime); font-size: 12px; letter-spacing: 1px">
+          MOVE BEYOND LIMITS
+        </p>
+      </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+      (function () {
+        let allEvents = [];
+        let registeredEventIds = new Set();
+        let filterSport = "all";
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const loadingEl = document.getElementById("events-loading");
+        const contentEl = document.getElementById("events-content");
+        const emptyEl = document.getElementById("events-empty");
+
+        function formatDate(dateStr) {
+          const d = new Date(dateStr);
+          return {
+            day: d.getDate(),
+            month: d
+              .toLocaleString("default", { month: "short" })
+              .toUpperCase(),
+          };
+        }
+
+        function formatTime(t) {
+          if (!t) return "TBC";
+          const s = String(t);
+          return s.length >= 5 ? s.slice(0, 5) : s;
+        }
+
+        function isUpcoming(dateStr) {
+          const d = new Date(dateStr);
+          d.setHours(0, 0, 0, 0);
+          return d >= today;
+        }
+
+        function filteredEvents() {
+          if (filterSport === "all") return allEvents;
+          if (filterSport === "general")
+            return allEvents.filter(
+              (e) => (e.sport || "").toLowerCase() === "general",
+            );
+          return allEvents.filter(
+            (e) => (e.sport || "").toLowerCase() === filterSport,
+          );
+        }
+
+        function splitEvents(events) {
+          const upcoming = [];
+          const past = [];
+          events.forEach((e) => {
+            if (isUpcoming(e.event_date)) upcoming.push(e);
+            else past.push(e);
+          });
+          upcoming.sort(
+            (a, b) => new Date(a.event_date) - new Date(b.event_date),
+          );
+          past.sort((a, b) => new Date(b.event_date) - new Date(a.event_date));
+          return { upcoming, past };
+        }
+
+        function sportBadgeSafe(sport) {
+          const s = (sport || "general").toLowerCase().replace(" ", "_");
+          if (typeof sportBadge === "function") return sportBadge(s);
+          return `<span class="badge badge-${s}">${s.replace("_", " ")}</span>`;
+        }
+
+        function renderCard(ev) {
+          const isRegistered = registeredEventIds.has(ev.event_id);
+          const { day, month } = formatDate(ev.event_date);
+          const timeStr = formatTime(ev.event_time);
+          const feeText =
+            ev.fee != null && Number(ev.fee) > 0
+              ? `₹ ${Number(ev.fee).toLocaleString()}`
+              : "Free";
+          const desc = ev.description || "";
+          const imgUrl =
+            "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600";
+
+          let actionHtml;
+          if (ev.past) {
+            actionHtml = '<span class="badge-registered">Past Event</span>';
+          } else if (isRegistered) {
+            actionHtml = '<span class="badge-registered">Registered ✓</span>';
+          } else {
+            actionHtml = `<button type="button" class="btn-register" data-event-id="${ev.event_id}">Register</button>`;
+          }
+
+          return `
+            <div class="event-card reveal" data-event-id="${ev.event_id}">
+              <div class="event-card-img">
+                <img src="${imgUrl}" alt="${ev.title || "Event"}">
+                <div class="event-date-badge"><span class="day">${day}</span><span class="month">${month}</span></div>
+              </div>
+              <div class="event-card-body">
+                <div class="event-card-header">${sportBadgeSafe(ev.sport)}</div>
+                <div class="event-card-title">${ev.title || "Event"}</div>
+                ${desc ? `<div class="event-card-desc">${desc}</div>` : ""}
+                <div class="event-card-meta">
+                  <span>🕐 ${timeStr}</span>
+                  <span>📍 ${ev.location || "TBC"}</span>
+                  <span>👥 ${ev.capacity || "—"}</span>
+                </div>
+                <div class="event-card-fee">${feeText}</div>
+                <div class="event-card-actions">${actionHtml}</div>
+              </div>
+            </div>`;
+        }
+
+        function render() {
+          const events = filteredEvents();
+          const { upcoming, past } = splitEvents(events);
+
+          if (events.length === 0) {
+            contentEl.style.display = "none";
+            emptyEl.style.display = "block";
+            return;
+          }
+          contentEl.style.display = "block";
+          emptyEl.style.display = "none";
+
+          let html = "";
+          if (upcoming.length > 0) {
+            html +=
+              '<div class="events-block"><h2><span>UPCOMING</span> EVENTS</h2><div class="events-grid">';
+            upcoming.forEach((e) => {
+              html += renderCard({ ...e, past: false });
+            });
+            html += "</div></div>";
+          }
+          if (past.length > 0) {
+            html +=
+              '<div class="events-block"><h2>PAST <span>EVENTS</span></h2><div class="events-grid">';
+            past.forEach((e) => {
+              html += renderCard({ ...e, past: true });
+            });
+            html += "</div></div>";
+          }
+
+          contentEl.innerHTML = html;
+
+          contentEl.querySelectorAll(".btn-register").forEach((btn) => {
+            btn.addEventListener("click", handleRegister);
+          });
+          if (typeof initReveal === "function") initReveal();
+        }
+
+        async function handleRegister(e) {
+          const btn = e.target;
+          const eventId = parseInt(btn.dataset.eventId, 10);
+          if (!currentUser) {
+            window.location.href =
+              "/login?msg=" +
+              encodeURIComponent("Please log in to register for events");
+            return;
+          }
+          
+          // Get event details
+          const event = allEvents.find((ev) => ev.event_id === eventId);
+          if (!event) {
+            showToast("Event not found", "error");
+            return;
+          }
+
+          // Check if event has fees
+          if (event.fee && Number(event.fee) > 0) {
+            // Redirect to payment page
+            const params = new URLSearchParams();
+            params.set("type", "event");
+            params.set("event_id", event.event_id);
+            params.set("program", event.title);
+            params.set("price", Number(event.fee));
+            params.set("location", event.location || "TBC");
+            params.set("sport", event.sport || "");
+            window.location.href = `/student/payment?${params.toString()}`;
+            return;
+          }
+
+          // Free event: register directly
+          btn.disabled = true;
+          try {
+            await apiCall("/api/events/register", "POST", {
+              event_id: eventId,
+            });
+            showToast("Registered for event!", "success");
+            registeredEventIds.add(eventId);
+            render();
+          } catch (err) {
+            if (
+              err.message &&
+              err.message.toLowerCase().includes("already registered")
+            ) {
+              registeredEventIds.add(eventId);
+              render();
+            } else {
+              showToast(err.message || "Registration failed", "error");
+            }
+            btn.disabled = false;
+          }
+        }
+
+        async function load() {
+          try {
+            const [authRes, eventsData] = await Promise.all([
+              fetch("/api/auth/me"),
+              apiCall("/api/events"),
+            ]);
+            const authData = await authRes.json();
+            if (authData.authenticated && authData.user) {
+              currentUser = authData.user;
+              updateNavAuth();
+              try {
+                const bookings = await apiCall("/api/bookings/my");
+                (bookings.events || []).forEach((er) => {
+                  if (er.event_id && (!er.status || er.status === "registered"))
+                    registeredEventIds.add(er.event_id);
+                });
+              } catch (_) {}
+            } else {
+              currentUser = null;
+            }
+
+            allEvents = Array.isArray(eventsData) ? eventsData : [];
+            loadingEl.style.display = "none";
+            render();
+          } catch (err) {
+            loadingEl.style.display = "none";
+            contentEl.style.display = "none";
+            emptyEl.style.display = "block";
+            emptyEl.innerHTML = `<p>Could not load events.</p><p>${err.message || ""}</p>`;
+            showToast(err.message || "Failed to load events", "error");
+          }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+          checkAuth();
+          document.querySelectorAll(".filter-btn").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              filterSport = btn.dataset.sport;
+              document
+                .querySelectorAll(".filter-btn")
+                .forEach((b) => b.classList.remove("active"));
+              btn.classList.add("active");
+              render();
+            });
+          });
+          load();
+        });
+      })();
+    </script>
+  </body>
+</html>

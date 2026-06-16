@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About – APEX Movement Sports Academy</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      /* ── HERO ── */
+      .about-hero {
+        background: var(--dark);
+        padding: 120px 48px 72px;
+        position: relative;
+        border-bottom: 1px solid var(--border);
+        overflow: hidden;
+      }
+      .about-hero::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(
+          to bottom,
+          transparent,
+          var(--lime),
+          transparent
+        );
+      }
+      .about-hero-watermark {
+        position: absolute;
+        top: 50%;
+        right: -40px;
+        transform: translateY(-50%);
+        font-family: "Bebas Neue";
+        font-size: clamp(120px, 18vw, 240px);
+        letter-spacing: 8px;
+        color: var(--white);
+        opacity: 0.03;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+      .about-hero .section-tag {
+        margin-bottom: 16px;
+      }
+      .about-hero h1 {
+        font-family: "Bebas Neue";
+        font-size: clamp(48px, 7vw, 80px);
+        letter-spacing: 4px;
+        line-height: 0.95;
+        margin-bottom: 20px;
+      }
+      .about-hero h1 span {
+        color: var(--lime);
+      }
+      .about-hero p {
+        color: var(--muted);
+        max-width: 560px;
+        font-size: 15px;
+        line-height: 1.8;
+      }
+
+      /* ── STATS BAR ── */
+      .stats-bar {
+        background: var(--panel);
+        border-bottom: 1px solid var(--border);
+        padding: 0 48px;
+        display: flex;
+        align-items: stretch;
+      }
+      .stats-bar-item {
+        flex: 1;
+        padding: 32px 24px;
+        text-align: center;
+        border-right: 1px solid var(--border);
+      }
+      .stats-bar-item:last-child {
+        border-right: none;
+      }
+      .stats-bar-num {
+        font-family: "Bebas Neue";
+        font-size: 48px;
+        line-height: 1;
+        color: var(--lime);
+        margin-bottom: 6px;
+      }
+      .stats-bar-label {
+        font-size: 12px;
+        color: var(--muted);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      /* ── STORY SECTION ── */
+      .story-section {
+        background: var(--black);
+        padding: 80px 48px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: center;
+      }
+      .story-img-wrap {
+        position: relative;
+        border-radius: var(--radius);
+        overflow: hidden;
+        aspect-ratio: 4/3;
+      }
+      .story-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(20%);
+        transition: filter 0.3s;
+      }
+      .story-img-wrap:hover img {
+        filter: grayscale(0%);
+      }
+      .story-img-badge {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        background: var(--lime);
+        color: var(--black);
+        font-family: "Bebas Neue";
+        font-size: 14px;
+        letter-spacing: 2px;
+        padding: 8px 16px;
+        border-radius: 6px;
+      }
+      .story-text .section-tag {
+        margin-bottom: 16px;
+      }
+      .story-text h2 {
+        font-family: "Bebas Neue";
+        font-size: clamp(36px, 4vw, 52px);
+        letter-spacing: 3px;
+        line-height: 1;
+        margin-bottom: 24px;
+      }
+      .story-text h2 span {
+        color: var(--lime);
+      }
+      .story-text p {
+        color: var(--muted);
+        line-height: 1.8;
+        margin-bottom: 16px;
+        font-size: 15px;
+      }
+      .story-milestones {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 32px;
+      }
+      .milestone {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        padding: 16px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        transition: border-color 0.2s;
+      }
+      .milestone:hover {
+        border-color: rgba(198, 241, 53, 0.2);
+      }
+      .milestone-year {
+        font-family: "Bebas Neue";
+        font-size: 22px;
+        color: var(--lime);
+        min-width: 52px;
+        letter-spacing: 1px;
+      }
+      .milestone-text {
+        font-size: 14px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .milestone-text strong {
+        color: var(--white);
+        display: block;
+        margin-bottom: 2px;
+      }
+
+      /* ── MISSION SECTION ── */
+      .mission-section {
+        background: var(--dark);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        padding: 80px 48px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .mission-section::before {
+        content: '"';
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: "Bebas Neue";
+        font-size: 300px;
+        color: var(--lime);
+        opacity: 0.04;
+        line-height: 1;
+        pointer-events: none;
+      }
+      .mission-quote {
+        font-family: "Bebas Neue";
+        font-size: clamp(28px, 4vw, 48px);
+        letter-spacing: 3px;
+        line-height: 1.2;
+        max-width: 800px;
+        margin: 0 auto 24px;
+        position: relative;
+        z-index: 1;
+      }
+      .mission-quote span {
+        color: var(--lime);
+      }
+      .mission-sub {
+        color: var(--muted);
+        font-size: 14px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      /* ── VALUES SECTION ── */
+      .values-section {
+        background: var(--black);
+        padding: 80px 48px;
+      }
+      .values-section .section-tag {
+        margin-bottom: 12px;
+      }
+      .values-section h2 {
+        font-family: "Bebas Neue";
+        font-size: clamp(36px, 4vw, 52px);
+        letter-spacing: 3px;
+        margin-bottom: 48px;
+      }
+      .values-section h2 span {
+        color: var(--lime);
+      }
+      .values-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+      }
+      .value-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 32px 24px;
+        transition:
+          transform 0.3s,
+          border-color 0.3s;
+      }
+      .value-card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(198, 241, 53, 0.25);
+      }
+      .value-icon {
+        width: 52px;
+        height: 52px;
+        background: var(--lime-dim);
+        border: 1px solid rgba(198, 241, 53, 0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+      .value-title {
+        font-family: "Bebas Neue";
+        font-size: 20px;
+        letter-spacing: 2px;
+        color: var(--lime);
+        margin-bottom: 10px;
+      }
+      .value-text {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      /* ── SPORTS SECTION ── */
+      .disciplines-section {
+        background: var(--dark);
+        padding: 80px 48px;
+        border-top: 1px solid var(--border);
+      }
+      .disciplines-section .section-tag {
+        margin-bottom: 12px;
+      }
+      .disciplines-section h2 {
+        font-family: "Bebas Neue";
+        font-size: clamp(36px, 4vw, 52px);
+        letter-spacing: 3px;
+        margin-bottom: 48px;
+      }
+      .disciplines-section h2 span {
+        color: var(--lime);
+      }
+      .disciplines-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+      }
+      .disc-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        display: flex;
+        align-items: stretch;
+        transition:
+          transform 0.3s,
+          border-color 0.3s;
+      }
+      .disc-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(198, 241, 53, 0.2);
+      }
+      .disc-accent {
+        width: 4px;
+        flex-shrink: 0;
+      }
+      .disc-accent.parkour {
+        background: var(--lime);
+      }
+      .disc-accent.calisthenics {
+        background: #63b3ed;
+      }
+      .disc-accent.rock_climbing {
+        background: #fc814a;
+      }
+      .disc-accent.acrobatics {
+        background: #b76ef7;
+      }
+      .disc-body {
+        padding: 28px;
+        flex: 1;
+      }
+      .disc-emoji {
+        font-size: 36px;
+        margin-bottom: 12px;
+      }
+      .disc-name {
+        font-family: "Bebas Neue";
+        font-size: 22px;
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+      }
+      .disc-text {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.7;
+        margin-bottom: 16px;
+      }
+      .disc-link {
+        color: var(--lime);
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .disc-link:hover {
+        text-decoration: underline;
+      }
+
+      /* ── CTA ── */
+      .about-cta {
+        background: var(--panel);
+        border-top: 1px solid var(--border);
+        padding: 80px 48px;
+        text-align: center;
+      }
+      .about-cta h2 {
+        font-family: "Bebas Neue";
+        font-size: clamp(36px, 5vw, 64px);
+        letter-spacing: 4px;
+        margin-bottom: 16px;
+      }
+      .about-cta h2 span {
+        color: var(--lime);
+      }
+      .about-cta p {
+        color: var(--muted);
+        font-size: 15px;
+        margin-bottom: 36px;
+        max-width: 480px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .about-cta-btns {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 1024px) {
+        .values-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 768px) {
+        .about-hero,
+        .story-section,
+        .mission-section,
+        .values-section,
+        .disciplines-section,
+        .about-cta {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
+        .stats-bar {
+          padding: 0 24px;
+          flex-wrap: wrap;
+        }
+        .stats-bar-item {
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+          min-width: 50%;
+        }
+        .story-section {
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+        .disciplines-grid {
+          grid-template-columns: 1fr;
+        }
+        .values-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/" class="nav-logo">
+        <div class="nav-logo-icon">A</div>
+        <span class="nav-logo-text">APEX<span>Academy</span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about" class="active">About</a></li>
+        <li><a href="/programs">Programs</a></li>
+        <li><a href="/coaches">Coaches</a></li>
+        <li><a href="/schedule">Schedule</a></li>
+        <li><a href="/events">Events</a></li>
+        <li><a href="/forum">Forum</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions" id="nav-actions">
+        <a href="/login" class="btn-ghost btn-sm">Login</a>
+        <a href="/register" class="btn-primary btn-sm">Join Now</a>
+      </div>
+      <button class="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+    <div class="mobile-menu">
+      <a href="/">Home</a><a href="/about">About</a
+      ><a href="/programs">Programs</a> <a href="/coaches">Coaches</a
+      ><a href="/schedule">Schedule</a> <a href="/events">Events</a
+      ><a href="/forum">Forum</a><a href="/contact">Contact</a><a href="/login">Login</a>
+    </div>
+
+    <!-- HERO -->
+    <section class="about-hero">
+      <div class="about-hero-watermark">ABOUT</div>
+      <div class="section-tag">Our Story</div>
+      <h1>MOVEMENT IS<br /><span>OUR MISSION</span></h1>
+      <p>
+        APEX Movement Sports Academy was founded in 2022 with one belief: every
+        person has untapped physical potential, and the right environment
+        unlocks it. We built an academy around movement disciplines that train
+        not just the body, but the mind and character.
+      </p>
+    </section>
+
+    <!-- STATS BAR -->
+    <div class="stats-bar">
+      <div class="stats-bar-item reveal">
+        <div class="stats-bar-num">500+</div>
+        <div class="stats-bar-label">Athletes Trained</div>
+      </div>
+      <div class="stats-bar-item reveal">
+        <div class="stats-bar-num">4</div>
+        <div class="stats-bar-label">Disciplines</div>
+      </div>
+      <div class="stats-bar-item reveal">
+        <div class="stats-bar-num">12+</div>
+        <div class="stats-bar-label">Programs Available</div>
+      </div>
+      <div class="stats-bar-item reveal">
+        <div class="stats-bar-num">6+</div>
+        <div class="stats-bar-label">Years of Excellence</div>
+      </div>
+      <div class="stats-bar-item reveal">
+        <div class="stats-bar-num">98%</div>
+        <div class="stats-bar-label">Student Satisfaction</div>
+      </div>
+    </div>
+
+    <!-- STORY -->
+    <section class="story-section">
+      <div class="story-img-wrap reveal">
+        <img
+          src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800"
+          alt="Apex Training"
+        />
+        <div class="story-img-badge">EST. 2019</div>
+      </div>
+      <div class="story-text reveal">
+        <div class="section-tag">How We Started</div>
+        <h2>BUILT BY <span>MOVERS,</span><br />FOR MOVERS</h2>
+        <p>
+          What started as a small parkour club in a warehouse has grown into a
+          full movement sports academy offering structured programs across four
+          disciplines. Our founding coaches competed internationally before
+          channelling everything they learned into teaching.
+        </p>
+        <p>
+          Today, APEX Movement Sports Academy is the region's leading movement
+          academy — with purpose-built facilities, a curriculum designed for all
+          ages and abilities, and a community that shows up every day to push
+          each other further.
+        </p>
+        <div class="story-milestones">
+          <div class="milestone">
+            <div class="milestone-year">2019</div>
+            <div class="milestone-text">
+              <strong>Doors Open</strong>
+              Launched with 2 coaches, 1 discipline, and 40 founding members.
+            </div>
+          </div>
+          <div class="milestone">
+            <div class="milestone-year">2021</div>
+            <div class="milestone-text">
+              <strong>Expansion</strong>
+              Added Rock Climbing wall and Acrobatics studio. Crossed 200 active
+              students.
+            </div>
+          </div>
+          <div class="milestone">
+            <div class="milestone-year">2023</div>
+            <div class="milestone-text">
+              <strong>Academy Status</strong>
+              Full curriculum launch with 12 programs across all four movement
+              disciplines.
+            </div>
+          </div>
+          <div class="milestone">
+            <div class="milestone-year">2025</div>
+            <div class="milestone-text">
+              <strong>500+ Athletes</strong>
+              Recognised as the region's top movement sports academy.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MISSION QUOTE -->
+    <section class="mission-section">
+      <div class="mission-quote reveal">
+        WE DON'T JUST TRAIN BODIES —<br />WE BUILD
+        <span>ATHLETES WHO THINK.</span>
+      </div>
+      <div class="mission-sub">The APEX Philosophy</div>
+    </section>
+
+    <!-- VALUES -->
+    <section class="values-section">
+      <div class="section-tag">What Drives Us</div>
+      <h2>OUR <span>CORE VALUES</span></h2>
+      <div class="values-grid">
+        <div class="value-card reveal">
+          <div class="value-icon">🎯</div>
+          <div class="value-title">Mastery First</div>
+          <div class="value-text">
+            We emphasise technique over speed. Every student builds a solid
+            foundation before advancing — no shortcuts, no egos.
+          </div>
+        </div>
+        <div class="value-card reveal">
+          <div class="value-icon">🤝</div>
+          <div class="value-title">Community</div>
+          <div class="value-text">
+            Movement is better together. Our academy is a space where everyone
+            supports each other's progress regardless of level.
+          </div>
+        </div>
+        <div class="value-card reveal">
+          <div class="value-icon">🛡️</div>
+          <div class="value-title">Safety Always</div>
+          <div class="value-text">
+            Every session is coach-led with structured warm-ups, spotter
+            protocols, and equipment checks. Fun never compromises safety.
+          </div>
+        </div>
+        <div class="value-card reveal">
+          <div class="value-icon">🔥</div>
+          <div class="value-title">Relentless Growth</div>
+          <div class="value-text">
+            We celebrate small wins as much as big ones. Progress is personal —
+            and we track yours from day one.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DISCIPLINES -->
+    <section class="disciplines-section">
+      <div class="section-tag">What We Offer</div>
+      <h2>FOUR <span>DISCIPLINES</span></h2>
+      <div class="disciplines-grid">
+        <div class="disc-card reveal">
+          <div class="disc-accent parkour"></div>
+          <div class="disc-body">
+            <div class="disc-emoji">🏃</div>
+            <div class="disc-name">PARKOUR</div>
+            <div class="disc-text">
+              Navigate obstacles with efficiency, creativity and control. From
+              basic vaults to advanced freerunning — we train every aspect of
+              urban movement.
+            </div>
+            <a href="/programs?sport=parkour" class="disc-link"
+              >View Parkour Programs →</a
+            >
+          </div>
+        </div>
+        <div class="disc-card reveal">
+          <div class="disc-accent calisthenics"></div>
+          <div class="disc-body">
+            <div class="disc-emoji">💪</div>
+            <div class="disc-name">CALISTHENICS</div>
+            <div class="disc-text">
+              Master your bodyweight. Build extraordinary strength, endurance
+              and body control through progressive calisthenics training for all
+              levels.
+            </div>
+            <a href="/programs?sport=calisthenics" class="disc-link"
+              >View Calisthenics Programs →</a
+            >
+          </div>
+        </div>
+        <div class="disc-card reveal">
+          <div class="disc-accent rock_climbing"></div>
+          <div class="disc-body">
+            <div class="disc-emoji">🧗</div>
+            <div class="disc-name">ROCK CLIMBING</div>
+            <div class="disc-text">
+              Problem-solving meets physical challenge. Our purpose-built wall
+              hosts bouldering and top-rope routes for beginners to advanced
+              climbers.
+            </div>
+            <a href="/programs?sport=rock_climbing" class="disc-link"
+              >View Climbing Programs →</a
+            >
+          </div>
+        </div>
+        <div class="disc-card reveal">
+          <div class="disc-accent acrobatics"></div>
+          <div class="disc-body">
+            <div class="disc-emoji">🤸</div>
+            <div class="disc-name">ACROBATICS</div>
+            <div class="disc-text">
+              Flips, handstands, tumbling and aerial — taught safely in a
+              sprung-floor studio with certified coaches and full crash mat
+              coverage.
+            </div>
+            <a href="/programs?sport=acrobatics" class="disc-link"
+              >View Acrobatics Programs →</a
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="about-cta">
+      <h2>READY TO <span>START MOVING?</span></h2>
+      <p>
+        Join 500+ athletes already training at APEX. Your first trial session is
+        completely free.
+      </p>
+      <div class="about-cta-btns">
+        <a href="/programs" class="btn-primary">Browse Programs ↗</a>
+        <a href="/#trial" class="btn-ghost">Book Free Trial</a>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/" class="nav-logo" style="margin-bottom: 0">
+            <div class="nav-logo-icon">A</div>
+            <span class="nav-logo-text">APEX<span>ACADEMY</span></span>
+          </a>
+          <p>
+            A movement sports academy dedicated to developing athletes through
+            Parkour, Calisthenics, Rock Climbing and Acrobatics.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Disciplines</h4>
+          <a href="/programs?sport=parkour">Parkour</a>
+          <a href="/programs?sport=calisthenics">Calisthenics</a>
+          <a href="/programs?sport=rock_climbing">Rock Climbing</a>
+          <a href="/programs?sport=acrobatics">Acrobatics</a>
+        </div>
+        <div class="footer-col">
+          <h4>Academy</h4>
+          <a href="/about">About Us</a>
+          <a href="/coaches">Our Coaches</a>
+          <a href="/schedule">Schedule</a>
+          <a href="/events">Events</a>
+        </div>
+        <div class="footer-col">
+          <h4>Join</h4>
+          <a href="/register">Register</a>
+          <a href="/login">Login</a>
+          <a href="/#trial">Free Trial</a>
+          <a href="/apply-for-coach">Become a Coach</a>
+          <a href="/contact">Contact</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 APEX Movement Academy. All rights reserved.</p>
+        <p style="color: var(--lime); font-size: 12px; letter-spacing: 1px">
+          MOVE BEYOND LIMITS
+        </p>
+      </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        if (typeof initReveal === "function") initReveal();
+      });
+    </script>
+  </body>
+</html>

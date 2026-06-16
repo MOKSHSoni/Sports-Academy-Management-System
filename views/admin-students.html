@@ -1,0 +1,992 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Students &amp; Events – APEX Admin</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      .dash-layout {
+        display: flex;
+        min-height: 100vh;
+      }
+      .dash-sidebar {
+        width: 240px;
+        background: var(--panel);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 100;
+        transition: transform 0.3s;
+      }
+      .dash-sidebar-open .dash-sidebar {
+        transform: translateX(0);
+      }
+      .dash-logo {
+        padding: 24px;
+        border-bottom: 1px solid var(--border);
+      }
+      .dash-logo a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+      }
+      .dash-logo-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--lime);
+        clip-path: polygon(
+          50% 0%,
+          100% 25%,
+          100% 75%,
+          50% 100%,
+          0% 75%,
+          0% 25%
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Bebas Neue";
+        color: var(--black);
+        font-size: 16px;
+      }
+      .dash-logo-text {
+        font-family: "Bebas Neue";
+        font-size: 20px;
+        letter-spacing: 2px;
+        color: var(--white);
+      }
+      .dash-logo-text span {
+        color: var(--lime);
+      }
+      .dash-user {
+        padding: 24px;
+        border-bottom: 1px solid var(--border);
+      }
+      .dash-user-name {
+        font-weight: 600;
+        font-size: 15px;
+        margin-bottom: 6px;
+      }
+      .dash-user-role {
+        display: inline-block;
+        background: rgba(198, 241, 53, 0.15);
+        color: var(--lime);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 20px;
+      }
+      .dash-nav {
+        flex: 1;
+        padding: 16px 0;
+        overflow-y: auto;
+      }
+      .dash-nav a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 24px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+      }
+      .dash-nav a:hover {
+        color: var(--white);
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .dash-nav a.active {
+        color: var(--lime);
+        background: rgba(198, 241, 53, 0.06);
+        border-left-color: var(--lime);
+      }
+      .dash-nav a.logout {
+        color: #ff6464;
+      }
+      .dash-nav a.logout:hover {
+        background: rgba(255, 100, 100, 0.1);
+      }
+      .dash-sidebar-toggle {
+        display: none;
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 101;
+        width: 44px;
+        height: 44px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--white);
+        font-size: 20px;
+        cursor: pointer;
+      }
+      .dash-main {
+        flex: 1;
+        margin-left: 240px;
+        background: var(--dark);
+        min-height: 100vh;
+        padding: 32px 48px 80px;
+      }
+      /* TABS */
+      .tab-bar {
+        display: flex;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 36px;
+      }
+      .tab-btn {
+        padding: 14px 28px;
+        background: none;
+        border: none;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -1px;
+        font-family: "Bebas Neue";
+        font-size: 16px;
+        letter-spacing: 2px;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .tab-btn:hover {
+        color: var(--white);
+      }
+      .tab-btn.active {
+        color: var(--lime);
+        border-bottom-color: var(--lime);
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+      /* TABLE */
+      .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .admin-table th {
+        text-align: left;
+        padding: 14px 20px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--muted);
+        background: rgba(0, 0, 0, 0.2);
+        border-bottom: 1px solid var(--border);
+      }
+      .admin-table td {
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+      }
+      .admin-table tr:last-child td {
+        border-bottom: none;
+      }
+      .admin-table tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      /* SECTION HEADER */
+      .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+      .section-header h2 {
+        font-family: "Bebas Neue";
+        font-size: 24px;
+        letter-spacing: 2px;
+      }
+      .section-header h2 span {
+        color: var(--lime);
+      }
+      /* SEARCH */
+      .search-input {
+        width: 100%;
+        max-width: 360px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 16px;
+        color: var(--white);
+        font-family: "DM Sans";
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s;
+        margin-bottom: 20px;
+        display: block;
+      }
+      .search-input:focus {
+        border-color: var(--lime);
+      }
+      .search-input::placeholder {
+        color: var(--muted);
+      }
+      /* BUTTONS */
+      .btn-edit {
+        background: var(--lime-dim);
+        color: var(--lime);
+        border: 1px solid rgba(198, 241, 53, 0.3);
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-edit:hover {
+        background: rgba(198, 241, 53, 0.2);
+      }
+      .btn-del {
+        background: rgba(255, 100, 100, 0.1);
+        color: #ff6464;
+        border: 1px solid rgba(255, 100, 100, 0.3);
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-del:hover {
+        background: rgba(255, 100, 100, 0.2);
+      }
+      .btn-read {
+        background: var(--lime);
+        color: var(--black);
+        border: none;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      /* MESSAGE CARDS */
+      .msg-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .msg-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      .msg-card.unread {
+        border-left: 3px solid var(--lime);
+      }
+      .msg-left {
+        flex: 1;
+        min-width: 0;
+      }
+      .msg-name {
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .msg-name small {
+        color: var(--muted);
+        font-weight: 400;
+        font-size: 12px;
+      }
+      .msg-subject {
+        color: var(--lime);
+        font-size: 13px;
+        margin-bottom: 6px;
+      }
+      .msg-preview {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .msg-meta {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      .msg-actions {
+        display: flex;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+      /* MODAL */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(8px);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-overlay.open {
+        display: flex;
+      }
+      .modal {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 36px;
+        width: 100%;
+        max-width: 540px;
+        position: relative;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      .modal-title {
+        font-family: "Bebas Neue";
+        font-size: 24px;
+        letter-spacing: 2px;
+        margin-bottom: 24px;
+      }
+      .modal-title span {
+        color: var(--lime);
+      }
+      .modal-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: none;
+        border: none;
+        color: var(--muted);
+        font-size: 24px;
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+      .modal-close:hover {
+        color: var(--white);
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .modal-footer {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+        justify-content: flex-end;
+      }
+      .admin-empty {
+        color: var(--muted);
+        padding: 32px;
+        text-align: center;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+      }
+      @media (max-width: 900px) {
+        .dash-main {
+          margin-left: 0;
+          padding-top: 72px;
+          padding-left: 24px;
+          padding-right: 24px;
+        }
+        .dash-sidebar {
+          transform: translateX(-100%);
+        }
+        .dash-sidebar-open .dash-sidebar {
+          transform: translateX(0);
+        }
+        .dash-sidebar-toggle {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .admin-table {
+          display: block;
+          overflow-x: auto;
+        }
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 600px) {
+        .dash-main {
+          padding: 24px 16px 60px;
+          padding-top: 72px;
+        }
+      }
+    </style>
+  </head>
+  <body class="dash-body">
+    <button
+      type="button"
+      class="dash-sidebar-toggle"
+      id="sidebar-toggle"
+      aria-label="Toggle menu"
+    >
+      ☰
+    </button>
+
+    <div class="dash-layout">
+      <aside class="dash-sidebar">
+        <div class="dash-logo">
+          <a href="/"
+            ><div class="dash-logo-icon">A</div>
+            <span class="dash-logo-text">APEX<span>Academy</span></span></a
+          >
+        </div>
+        <div class="dash-user">
+          <div class="dash-user-name" id="user-name">—</div>
+          <span class="dash-user-role">Admin</span>
+        </div>
+        <nav class="dash-nav">
+          <a href="/admin">Dashboard</a>
+          <a href="/admin/programs">Programs &amp; Coaches</a>
+          <a href="/admin/students" class="active">Students &amp; Events</a>
+          <a href="/admin/users">User Roles</a>
+          <a href="/admin/applications">Coach Applications</a>
+          <a href="#" class="logout" id="logout-link">Logout</a>
+        </nav>
+      </aside>
+
+      <main class="dash-main">
+        <h1
+          style="
+            font-family: &quot;Bebas Neue&quot;;
+            font-size: 32px;
+            letter-spacing: 2px;
+            margin-bottom: 32px;
+          "
+        >
+          STUDENTS &amp; <span style="color: var(--lime)">EVENTS</span>
+        </h1>
+
+        <div class="tab-bar">
+          <button class="tab-btn active" data-tab="students">Students</button>
+          <button class="tab-btn" data-tab="events">Events</button>
+          <button class="tab-btn" data-tab="messages">Messages</button>
+        </div>
+
+        <!-- STUDENTS -->
+        <div class="tab-panel active" id="tab-students">
+          <div class="section-header">
+            <h2>ALL <span>STUDENTS</span></h2>
+            <span
+              style="color: var(--muted); font-size: 13px"
+              id="student-count"
+            ></span>
+          </div>
+          <input
+            type="text"
+            class="search-input"
+            id="student-search"
+            placeholder="Search by name or email..."
+          />
+          <div id="students-wrap">
+            <p style="color: var(--muted)">Loading...</p>
+          </div>
+        </div>
+
+        <!-- EVENTS -->
+        <div class="tab-panel" id="tab-events">
+          <div class="section-header">
+            <h2>ALL <span>EVENTS</span></h2>
+            <button
+              class="btn-primary"
+              style="font-size: 13px; padding: 10px 20px"
+              id="add-event-btn"
+            >
+              + Add Event
+            </button>
+          </div>
+          <div id="events-wrap">
+            <p style="color: var(--muted)">Loading...</p>
+          </div>
+        </div>
+
+        <!-- MESSAGES -->
+        <div class="tab-panel" id="tab-messages">
+          <div class="section-header">
+            <h2>CONTACT <span>MESSAGES</span></h2>
+            <span
+              style="color: var(--muted); font-size: 13px"
+              id="msg-count"
+            ></span>
+          </div>
+          <div class="msg-cards" id="messages-wrap"></div>
+        </div>
+      </main>
+    </div>
+
+    <!-- EVENT MODAL -->
+    <div class="modal-overlay" id="event-modal">
+      <div class="modal">
+        <button class="modal-close" id="em-close">✕</button>
+        <div class="modal-title" id="em-title">ADD <span>EVENT</span></div>
+        <form id="event-form">
+          <input type="hidden" id="em-id" />
+          <div class="form-group">
+            <label class="form-label">Event Title *</label>
+            <input
+              type="text"
+              class="form-control"
+              id="em-title-input"
+              placeholder="e.g. Parkour Jam 2025"
+              required
+            />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Sport</label>
+              <select class="form-control" id="em-sport">
+                <option value="general">General</option>
+                <option value="parkour">🏃 Parkour</option>
+                <option value="calisthenics">💪 Calisthenics</option>
+                <option value="rock_climbing">🧗 Rock Climbing</option>
+                <option value="acrobatics">🤸 Acrobatics</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Fee (RM, 0 = Free)</label>
+              <input
+                type="number"
+                class="form-control"
+                id="em-fee"
+                value="0"
+                step="0.01"
+                min="0"
+              />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Date *</label>
+              <input type="date" class="form-control" id="em-date" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Time</label>
+              <input type="time" class="form-control" id="em-time" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Location</label>
+              <input
+                type="text"
+                class="form-control"
+                id="em-location"
+                placeholder="Venue name"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Capacity</label>
+              <input
+                type="number"
+                class="form-control"
+                id="em-capacity"
+                placeholder="50"
+                min="1"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea
+              class="form-control"
+              id="em-desc"
+              rows="3"
+              placeholder="What is this event about?"
+            ></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-ghost" id="em-cancel">
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary" id="em-submit">
+              Save Event
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+      (function () {
+        let allStudents = [];
+
+        /* TABS */
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            document
+              .querySelectorAll(".tab-btn")
+              .forEach((b) => b.classList.remove("active"));
+            document
+              .querySelectorAll(".tab-panel")
+              .forEach((p) => p.classList.remove("active"));
+            btn.classList.add("active");
+            document
+              .getElementById("tab-" + btn.dataset.tab)
+              .classList.add("active");
+          });
+        });
+
+        /* MODAL HELPERS */
+        const openModal = (id) =>
+          document.getElementById(id).classList.add("open");
+        const closeModal = (id) =>
+          document.getElementById(id).classList.remove("open");
+        document
+          .getElementById("em-close")
+          .addEventListener("click", () => closeModal("event-modal"));
+        document
+          .getElementById("em-cancel")
+          .addEventListener("click", () => closeModal("event-modal"));
+        document
+          .getElementById("event-modal")
+          .addEventListener("click", (e) => {
+            if (e.target === e.currentTarget) closeModal("event-modal");
+          });
+
+        /* FORMAT HELPERS */
+        function fmtDate(d) {
+          if (!d) return "—";
+          return new Date(d).toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          });
+        }
+        function fmtTime(t) {
+          return t ? String(t).slice(0, 5) : "—";
+        }
+
+        /* LOAD STUDENTS */
+        async function loadStudents() {
+          const wrap = document.getElementById("students-wrap");
+          try {
+            allStudents = await apiCall("/api/admin/students");
+            document.getElementById("student-count").textContent =
+              allStudents.length + " total";
+            renderStudents(allStudents);
+          } catch (err) {
+            wrap.innerHTML =
+              '<div class="admin-empty">Failed to load students.</div>';
+          }
+        }
+
+        function renderStudents(list) {
+          const wrap = document.getElementById("students-wrap");
+          if (!list.length) {
+            wrap.innerHTML =
+              '<div class="admin-empty">No students match your search.</div>';
+            return;
+          }
+          wrap.innerHTML = `
+          <table class="admin-table">
+            <thead><tr>
+              <th>Name</th><th>Email</th><th>Age Group</th>
+              <th>Fitness Goal</th><th>Preferred Sport</th><th>Joined</th>
+            </tr></thead>
+            <tbody>${list
+              .map(
+                (s) => `
+              <tr>
+                <td><strong>${s.name || "—"}</strong></td>
+                <td style="color:var(--muted);font-size:13px">${s.email || "—"}</td>
+                <td style="font-size:13px">${s.age_group || "—"}</td>
+                <td style="font-size:13px">${s.fitness_goal || "—"}</td>
+                <td>${sportBadge(s.preferred_sport || "")}</td>
+                <td style="color:var(--muted);font-size:13px">${fmtDate(s.created_at)}</td>
+              </tr>`,
+              )
+              .join("")}
+            </tbody>
+          </table>`;
+        }
+
+        /* STUDENT SEARCH */
+        document
+          .getElementById("student-search")
+          .addEventListener("input", (e) => {
+            const q = e.target.value.toLowerCase();
+            renderStudents(
+              allStudents.filter(
+                (s) =>
+                  (s.name || "").toLowerCase().includes(q) ||
+                  (s.email || "").toLowerCase().includes(q),
+              ),
+            );
+          });
+
+        /* LOAD EVENTS */
+        async function loadEvents() {
+          const wrap = document.getElementById("events-wrap");
+          try {
+            const events = await apiCall("/api/events");
+            if (!events.length) {
+              wrap.innerHTML =
+                '<div class="admin-empty">No events yet. Create your first one above.</div>';
+              return;
+            }
+            wrap.innerHTML = `
+            <table class="admin-table">
+              <thead><tr>
+                <th>Title</th><th>Sport</th><th>Date</th><th>Time</th>
+                <th>Location</th><th>Capacity</th><th>Fee</th><th>Actions</th>
+              </tr></thead>
+              <tbody>${events
+                .map(
+                  (ev) => `
+                <tr>
+                  <td><strong>${ev.title}</strong></td>
+                  <td>${sportBadge(ev.sport || "general")}</td>
+                  <td>${fmtDate(ev.event_date)}</td>
+                  <td style="font-size:13px">${fmtTime(ev.event_time)}</td>
+                  <td style="color:var(--muted);font-size:13px">${ev.location || "—"}</td>
+                  <td style="font-size:13px">${ev.capacity}</td>
+                  <td>${Number(ev.fee) > 0 ? "₹ " + Number(ev.fee).toFixed(2) : '<span style="color:var(--lime)">Free</span>'}</td>
+                  <td>
+                    <button class="btn-edit" data-id="${ev.event_id}">Edit</button>
+                    <button class="btn-del"  data-id="${ev.event_id}">Delete</button>
+                  </td>
+                </tr>`,
+                )
+                .join("")}
+              </tbody>
+            </table>`;
+
+            wrap.querySelectorAll(".btn-edit").forEach((btn) => {
+              btn.addEventListener("click", () => {
+                const ev = events.find((x) => x.event_id == btn.dataset.id);
+                if (!ev) return;
+                document.getElementById("em-title").innerHTML =
+                  "EDIT <span>EVENT</span>";
+                document.getElementById("em-id").value = ev.event_id;
+                document.getElementById("em-title-input").value = ev.title;
+                document.getElementById("em-sport").value =
+                  ev.sport || "general";
+                document.getElementById("em-fee").value = ev.fee || 0;
+                document.getElementById("em-date").value = ev.event_date
+                  ? ev.event_date.slice(0, 10)
+                  : "";
+                document.getElementById("em-time").value = ev.event_time
+                  ? fmtTime(ev.event_time)
+                  : "";
+                document.getElementById("em-location").value =
+                  ev.location || "";
+                document.getElementById("em-capacity").value =
+                  ev.capacity || "";
+                document.getElementById("em-desc").value = ev.description || "";
+                openModal("event-modal");
+              });
+            });
+
+            wrap.querySelectorAll(".btn-del").forEach((btn) => {
+              btn.addEventListener("click", async () => {
+                if (!confirm("Delete this event?")) return;
+                try {
+                  await apiCall(`/api/events/${btn.dataset.id}`, "DELETE");
+                  showToast("Event deleted", "success");
+                  loadEvents();
+                } catch (err) {
+                  showToast(err.message, "error");
+                }
+              });
+            });
+          } catch (err) {
+            wrap.innerHTML =
+              '<div class="admin-empty">Failed to load events.</div>';
+          }
+        }
+
+        /* ADD EVENT */
+        document
+          .getElementById("add-event-btn")
+          .addEventListener("click", () => {
+            document.getElementById("em-title").innerHTML =
+              "ADD <span>EVENT</span>";
+            document.getElementById("event-form").reset();
+            document.getElementById("em-id").value = "";
+            document.getElementById("em-fee").value = "0";
+            openModal("event-modal");
+          });
+
+        /* EVENT SUBMIT */
+        document
+          .getElementById("event-form")
+          .addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const id = document.getElementById("em-id").value;
+            const btn = document.getElementById("em-submit");
+            
+            // Validate date
+            const eventDate = document.getElementById("em-date").value;
+            if (!eventDate) {
+              showToast("Please select an event date", "error");
+              return;
+            }
+            
+            const selectedDate = new Date(eventDate);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (selectedDate < today) {
+              showToast("Event date must be in the future", "error");
+              return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = "Saving...";
+            const body = {
+              title: document.getElementById("em-title-input").value,
+              sport: document.getElementById("em-sport").value,
+              fee: parseFloat(document.getElementById("em-fee").value) || 0,
+              event_date: document.getElementById("em-date").value,
+              event_time: document.getElementById("em-time").value,
+              location: document.getElementById("em-location").value,
+              capacity:
+                parseInt(document.getElementById("em-capacity").value, 10) ||
+                50,
+              description: document.getElementById("em-desc").value,
+            };
+            try {
+              if (id) {
+                await apiCall(`/api/events/${id}`, "PUT", body);
+                showToast("Event updated!", "success");
+              } else {
+                await apiCall("/api/events", "POST", body);
+                showToast("Event created!", "success");
+              }
+              closeModal("event-modal");
+              loadEvents();
+            } catch (err) {
+              showToast(err.message, "error");
+            }
+            btn.disabled = false;
+            btn.textContent = "Save Event";
+          });
+
+        /* LOAD MESSAGES */
+        async function loadMessages() {
+          const wrap = document.getElementById("messages-wrap");
+          try {
+            const msgs = await apiCall("/api/admin/messages");
+            const unread = msgs.filter((m) => !m.is_read).length;
+            document.getElementById("msg-count").textContent =
+              msgs.length + " total · " + unread + " unread";
+            if (!msgs.length) {
+              wrap.innerHTML =
+                '<div class="admin-empty">No messages yet.</div>';
+              return;
+            }
+            wrap.innerHTML = msgs
+              .map(
+                (m) => `
+            <div class="msg-card ${!m.is_read ? "unread" : ""}">
+              <div class="msg-left">
+                <div class="msg-name">${m.name || "—"} <small>&lt;${m.email || ""}&gt;</small></div>
+                <div class="msg-subject">${m.subject || "No subject"}</div>
+                <div class="msg-preview">${(m.message || "").slice(0, 140)}${m.message && m.message.length > 140 ? "…" : ""}</div>
+                <div class="msg-meta">${fmtDate(m.submitted_at)} · ${
+                  m.is_read
+                    ? '<span style="color:var(--muted)">Read</span>'
+                    : '<span style="color:var(--lime);font-weight:600">Unread</span>'
+                }</div>
+              </div>
+              <div class="msg-actions">
+                ${!m.is_read ? `<button class="btn-read" data-id="${m.message_id}">Mark Read</button>` : ""}
+                <button class="btn-del" data-id="${m.message_id}">Delete</button>
+              </div>
+            </div>`,
+              )
+              .join("");
+
+            wrap.querySelectorAll(".btn-read").forEach((btn) => {
+              btn.addEventListener("click", async () => {
+                btn.disabled = true;
+                try {
+                  await apiCall(
+                    `/api/admin/messages/${btn.dataset.id}/read`,
+                    "PUT",
+                  );
+                  showToast("Marked as read", "success");
+                  loadMessages();
+                } catch (err) {
+                  showToast(err.message, "error");
+                  btn.disabled = false;
+                }
+              });
+            });
+
+            wrap.querySelectorAll(".btn-del").forEach((btn) => {
+              btn.addEventListener("click", async () => {
+                if (!confirm("Delete this message?")) return;
+                try {
+                  await apiCall(
+                    `/api/admin/messages/${btn.dataset.id}`,
+                    "DELETE",
+                  );
+                  showToast("Message deleted", "success");
+                  loadMessages();
+                } catch (err) {
+                  showToast(err.message, "error");
+                }
+              });
+            });
+          } catch (err) {
+            wrap.innerHTML =
+              '<div class="admin-empty">Failed to load messages.</div>';
+          }
+        }
+
+        /* INIT */
+        async function init() {
+          const res = await fetch("/api/auth/me");
+          const auth = await res.json();
+          if (!auth.authenticated) {
+            window.location.href = "/login";
+            return;
+          }
+          if (auth.user.role !== "admin") {
+            window.location.href = "/";
+            return;
+          }
+          currentUser = auth.user;
+          document.getElementById("user-name").textContent = currentUser.name;
+          await Promise.all([loadStudents(), loadEvents(), loadMessages()]);
+          document
+            .getElementById("logout-link")
+            .addEventListener("click", (e) => {
+              e.preventDefault();
+              logout();
+            });
+          document
+            .getElementById("sidebar-toggle")
+            .addEventListener("click", () => {
+              document.body.classList.toggle("dash-sidebar-open");
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", init);
+      })();
+    </script>
+  </body>
+</html>
